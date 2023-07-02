@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.m": "matlab",
+        "wchar.h": "c"
+    }
+}
