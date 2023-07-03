@@ -2,6 +2,7 @@
 # define PLAYER_H
 
 # include "item.h"
+# include "display.h"
 
 # define ROLE_NUM 4 // 角色数量
 
@@ -16,6 +17,7 @@ typedef struct _Player
 {
     int id; // id 作为玩家的标识，并表示投骰子的顺序
     Role_enum role; // 表示玩家所选的角色
+    Color_enum color; // 玩家对应的color
     int pos; // 玩家的坐标，将地图看成一维数组，pos是数组的下标
     int money; // 玩家拥有的金钱数量，用来买地和房子，注意有初始资金
     int point; // 玩家拥有的点数，用来买道具
@@ -24,8 +26,10 @@ typedef struct _Player
     int robot_cnt; // 玩家拥有的机器娃娃数量
     int free_of_toll_cnt; // 玩家拥有面过路费的次数，当获得财神礼品时刷新为5或加5？
     int recovery_time_cnt; // 玩家被炸伤后剩余的恢复天数，被炸伤后变为3;
+    int lose; // 破产输了
 }Player_t;
 
+Player_t* func_init_player(Role_enum role);
 int func_get_points(Player_t* player_ptr);
 int func_get_item_num(Player_t* player_ptr);
 int func_sub_points(Player_t*, int);

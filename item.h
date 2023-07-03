@@ -5,7 +5,7 @@
 
 typedef enum _Item
 {
-    VOID // 无道具
+    VOID_ITEM // 无道具
 ,   BARRIER // 路障
 ,   ROBOT // 机器娃娃
 ,   BOMB // 炸弹
