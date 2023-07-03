@@ -1,0 +1,181 @@
+# ifndef UTILS_H
+# define UTILS_H
+
+# define SPACE_STR "                           " // 地图中间一行空格
+# define COLOR_NUM 5
+
+# define LAND_NUM 70
+# define START_POS 0
+# define TOOL_POS 28
+# define HOSPITAL_POS 14
+# define GIFT_POS 35
+# define PRISON_POS 49
+# define MAGIC_POS 63
+# define LAND_1_PRICE 200 
+# define LAND_2_PRICE 500
+# define LAND_3_PRICE 300
+# define LAND_4_PRICE __INT_MAX__
+# define LAND_TYPE_NUM 11
+
+# define ROLE_NUM 4 // 角色数量
+
+# define DEFAULT_INIT_MONEY 10000
+# define MAX_INIT_MONEY 50000
+# define MIN_INIT_MONEY 50000
+# define RECOVERY_TIME 3
+# define PRISON_TIME 2
+# define ITEM_NUM 4
+
+typedef enum _Color{
+	RED
+,	GREEN
+,	YELLOW
+,	BLUE
+,	WHITE
+}Color_enum;
+
+typedef enum _Land_enum
+{
+    VOID_LAND // 空地 0
+,   HUT // 茅屋 1
+,   HOUSE // 洋房 2
+,   SKYCRAPER // 摩天楼 3
+,   START // 起点 S
+,   TOOL // 道具屋 T
+,   GIFT // 礼品屋 G
+,   MAGIC // 魔法屋 M
+,   HOSPITAL // 医院 H
+,   PRISON // 监狱 P
+,   MINE // 矿地 $
+} Land_enum; // nyw 添加
+
+typedef enum _Item
+{
+    VOID_ITEM // 无道具
+,   BARRIER // 路障
+,   ROBOT // 机器娃娃
+,   BOMB // 炸弹
+}Item_enum; // 道具类型
+
+typedef struct _Land
+{
+    int type; // 土地的类型
+    int base_price; // 空地基础价格
+    int price; // 土地当前的价值，初始化为0，房子每升一次等级 += base_price
+    // int diduan; // 土地地段 考虑删除该属性，因为地段提供的价格信息包含在price中
+    int point; // 可以在此获取的点数
+    int owner_id; // 判断拥有者是谁，-1表示未占用
+    Item_enum item; // 道具类型，VOID_ITEM(0)表示没有
+    char symbol; // 显示的土地字符
+    Color_enum color; // 显示的土地颜色
+}Land_t;
+
+typedef enum _Role {
+    ROLE_Q // 钱夫人
+,   ROLE_A // 阿土伯
+,   ROLE_S // 孙小美
+,   ROLE_J // 金贝贝
+} Role_enum;
+
+typedef struct _Player
+{
+    int id; // id 作为玩家的标识，并表示投骰子的顺序
+    Role_enum role; // 表示玩家所选的角色
+    Color_enum color; // 玩家对应的color
+    int pos; // 玩家的坐标，将地图看成一维数组，pos是数组的下标
+    int money; // 玩家拥有的金钱数量，用来买地和房子，注意有初始资金
+    int point; // 玩家拥有的点数，用来买道具
+    int barrier_cnt; // 玩家拥有的路障数量
+    int bomb_cnt; // 玩家拥有的炸弹数量
+    int robot_cnt; // 玩家拥有的机器娃娃数量
+    int free_of_toll_cnt; // 玩家拥有面过路费的次数，当获得财神礼品时刷新为5或加5？
+    int recovery_time_cnt; // 玩家被炸伤后剩余的恢复天数，被炸伤后变为3;
+    int lose; // 破产输了
+}Player_t;
+
+typedef struct _Game
+{
+    Player_t* players_ptr[ROLE_NUM];  // 最多四个人 in player.c
+    int player_num; // 玩家数量 [2~4]
+    int init_money; // 玩家初始资金，在程序开始时根据输入初始化初始化
+
+    int curr_player_id; // 当前玩家id，初始化为0;考虑去除，可能用不到
+
+    Land_t* land_ptr[LAND_NUM]; // 游戏的地图
+} Game_t;
+
+
+typedef enum _Gift
+{
+    BONUS// 奖金
+,   POINT_CARD // 点数卡
+,   BLESS // 财神祝福
+} Gift_enum;
+
+void  get_cmd(Game_t* game_ptr, int player_id);
+
+void func_print_hint(Role_enum role);
+void func_display_map(Game_t*);
+void func_print_with_color(Color_enum color, char chr);
+
+/**
+ * @brief
+ * 使用方法
+ * Game_t* game_ptr = NULL;
+ * game_ptr = func_init_game();
+ */
+Game_t* func_init_game();
+
+/**
+ * @brief 
+ * 使用方法
+ * int done = func_game_step(game_ptr)
+ * 运行一回合，即所有可以动的玩家进行一次投骰子
+ * 当返回为1时，游戏结束
+ */
+int func_game_step(Game_t* game_ptr);
+
+void func_free_mem(Game_t* game_ptr);
+
+void func_game_over(Game_t* game_ptr);
+
+int func_check_game_over(Game_t* game_ptr);
+
+void func_check_buy(Land_t* land_ptr, Player_t* player_ptr);
+
+void func_check_update(Land_t* land_ptr, Player_t* player_ptr);
+
+int func_roll(Game_t* game_ptr, int player_id);
+
+int func_player_suffer(Game_t* game_ptr, int player_id, int pos);
+
+void func_player_go_prison(Game_t* game_ptr, int player_id);
+
+void func_step(Game_t* game_ptr, int player_id, int steps);
+
+void func_sell(Game_t* game_ptr, int player_id, int sell_pos);
+
+void func_block(Game_t* game_ptr, int player_id, int block_pos);
+
+void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos);
+
+void func_robot(Game_t* game_ptr,int player_id);
+
+void func_query(Game_t* game_ptr,int player_id);
+
+void func_quit(Game_t* game_ptr);
+
+void func_help();
+
+void func_pay_toll(Game_t* game_ptr, int player_id);
+
+
+int scanf_num();
+char *func_scanf_str(char buf[]);
+int sizeof_num(int a);
+
+void func_init_land(Land_t* land_ptr[]);
+
+Player_t* func_init_player(Role_enum role, int id, int init_money);
+
+# endif

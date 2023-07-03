@@ -113,6 +113,10 @@
         "show.h": "c",
         "player.h": "c",
         "item.h": "c",
-        "display.h": "c"
+        "display.h": "c",
+        "game.h": "c",
+        "cmd.h": "c",
+        "in.h": "c",
+        "utils.h": "c"
     }
 }

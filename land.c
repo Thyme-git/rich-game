@@ -1,5 +1,5 @@
-# include "land.h"
 # include <malloc.h>
+# include "utils.h"
 
 const char land_symbol[LAND_TYPE_NUM] = {'0', '1', '2', '3', 'S', 'T', 'G', 'M', 'H', 'P', '$'};
 // 使用方法 land_symbol[VOID_LAND] 取得 '0'
