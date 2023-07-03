@@ -9,7 +9,7 @@ const Color_enum role_color[ROLE_NUM] = {RED, GREEN, BLUE, YELLOW};
 
 Player_t* func_init_player(Role_enum role, int id, int init_money)
 {
-    Player_t * player = (Player_t *)malloc(sizeof(Player_t *));
+    Player_t * player = (Player_t *)malloc(sizeof(Player_t));
     player->barrier_cnt = 0;
     player->bomb_cnt = 0;
     player->color = role_color[role];

@@ -12,7 +12,11 @@ int main()
     game_ptr = func_init_game();
 
     // 无限循环游戏
-    while (func_game_step(game_ptr));
+    int done = 0;
+    while (!done)
+    {
+        done = func_game_step(game_ptr);
+    }
 
     return 0;
 }

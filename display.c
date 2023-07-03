@@ -15,7 +15,7 @@ const char* role_hint[ROLE_NUM] = {
 
 void func_print_hint(Role_enum role)
 {
-    printf("%s", role_hint[role]);
+    printf("%s ", role_hint[role]);
 }
 
 // void func_print_help()
@@ -51,7 +51,7 @@ void func_display_map(Game_t* game_ptr)
     Player_t** player_ptr = game_ptr->players_ptr;
     int player_num = game_ptr->player_num;
     // 确定打印的内容
-    for (int i = 0; i <= LAND_NUM; ++i)
+    for (int i = 0; i < LAND_NUM; ++i)
     {
         Land_enum type = land_ptr[i]->type;
         int owner_id = land_ptr[i]->owner_id;

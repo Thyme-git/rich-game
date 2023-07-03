@@ -18,6 +18,7 @@ void get_cmd(Game_t* game_ptr, int player_id)
         if(num == 0 || (strlen(p) > strlen(buf)+num))//比较p的长度和buf+num的长度
         {
             printf("你的输入错误  请重新输入指令 按help查看指令\n");
+            func_print_hint(game_ptr->players_ptr[player_id]->role);
         }
         else
         {
@@ -61,6 +62,7 @@ void get_cmd(Game_t* game_ptr, int player_id)
             }
             else{
                 printf("你的输入错误  请重新输入指令 按help查看指令\n");
+                func_print_hint(game_ptr->players_ptr[player_id]->role);
             }
         }
     }

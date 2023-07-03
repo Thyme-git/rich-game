@@ -15,10 +15,10 @@ Game_t* func_init_game()
     int input_money = scanf_num();
     if (input_money < MIN_INIT_MONEY || input_money > MAX_INIT_MONEY)
     {
-        printf("输入范围不正确，资金初始化为默认值 %d", DEFAULT_INIT_MONEY);
+        printf("输入范围不正确，资金初始化为默认值 %d\n", DEFAULT_INIT_MONEY);
     }else{
         game_ptr->init_money = input_money;
-        printf("资金初始化为 %d", input_money);
+        printf("资金初始化为 %d\n", input_money);
     }
 
     // 输入角色
@@ -29,7 +29,7 @@ Game_t* func_init_game()
         role -= '1';
         if( role < 4 && role >= 0)
         {
-            game_ptr->players_ptr[game_ptr->player_num] = func_init_player(role, game_ptr->player_num, input_money);
+            game_ptr->players_ptr[game_ptr->player_num] = func_init_player(role, game_ptr->player_num, game_ptr->init_money);
         }
         role = getchar();
         game_ptr->player_num += 1;
@@ -84,11 +84,11 @@ int func_game_step(Game_t* game_ptr)
             func_check_update(land_ptr[pos], player_ptr[player_id]);
         }
 
-        // 打印提示符号
-        func_print_hint(player_ptr[player_id]->role);
-        
         // 显示地图
         func_display_map(game_ptr);
+        
+        // 打印提示符号
+        func_print_hint(player_ptr[player_id]->role);
 
         // 读取命令并判断是否有错误、执行
         get_cmd(game_ptr, player_id);
