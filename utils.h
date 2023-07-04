@@ -30,6 +30,9 @@
 # define ROBOT_PRICE 30
 # define BOMB_PRICE 50
 
+# define REGEX_MAX_LEN 32
+# define REGEX_NUM 18
+
 typedef enum _Color{
 	RED
 ,	GREEN
@@ -115,6 +118,36 @@ typedef enum _Gift
 ,   POINT_CARD // 点数卡
 ,   BLESS // 财神祝福
 } Gift_enum;
+
+typedef enum _Order
+{
+    ORDER_ROLL    
+,   ORDER_ROBOT   
+,   ORDER_QUERY   
+,   ORDER_HELP    
+,   ORDER_QUIT    
+,   ORDER_STEP    
+,   ORDER_SELL    
+,   ORDER_BLOCK   
+,   ORDER_MONEY   
+,   ORDER_BUFF    
+,   ORDER_POINT   
+,   ORDER_STOP    
+,   ORDER_POS     
+,   ORDER_ITEM    
+,   ORDER_MAP     
+,   ORDER_UNMAP
+,   ORDER_BOMB
+,   ORDER_BARRIER
+}Order_enum;
+
+typedef struct _Reg
+{
+    regex_t reg;
+    regmatch_t reg_match;
+    char regex[REGEX_MAX_LEN];
+}Reg_t;
+
 
 void  get_cmd(Game_t* game_ptr, int player_id);
 
