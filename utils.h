@@ -21,10 +21,14 @@
 
 # define DEFAULT_INIT_MONEY 10000
 # define MAX_INIT_MONEY 50000
-# define MIN_INIT_MONEY 50000
+# define MIN_INIT_MONEY 1000
 # define RECOVERY_TIME 3
 # define PRISON_TIME 2
 # define ITEM_NUM 4
+
+# define BARRIER_PRICE 50
+# define ROBOT_PRICE 30
+# define BOMB_PRICE 50
 
 typedef enum _Color{
 	RED
@@ -90,7 +94,7 @@ typedef struct _Player
     int robot_cnt; // 玩家拥有的机器娃娃数量
     int free_of_toll_cnt; // 玩家拥有面过路费的次数，当获得财神礼品时刷新为5或加5？
     int recovery_time_cnt; // 玩家被炸伤后剩余的恢复天数，被炸伤后变为3;
-    int lose; // 破产输了
+    int lose; // 1表示破产输了，0表示沒輸
 }Player_t;
 
 typedef struct _Game
@@ -99,7 +103,7 @@ typedef struct _Game
     int player_num; // 玩家数量 [2~4]
     int init_money; // 玩家初始资金，在程序开始时根据输入初始化初始化
 
-    int curr_player_id; // 当前玩家id，初始化为0;考虑去除，可能用不到
+    // int curr_player_id; // 当前玩家id，初始化为0;考虑去除，可能用不到
 
     Land_t* land_ptr[LAND_NUM]; // 游戏的地图
 } Game_t;
@@ -115,7 +119,7 @@ typedef enum _Gift
 void  get_cmd(Game_t* game_ptr, int player_id);
 
 void func_print_hint(Role_enum role);
-void func_display_map(Game_t*);
+void func_display_map(Game_t* game_ptr, int player_id);
 void func_print_with_color(Color_enum color, char chr);
 
 /**
@@ -169,10 +173,24 @@ void func_help();
 
 void func_pay_toll(Game_t* game_ptr, int player_id);
 
+void func_get_point(Game_t* game_ptr, int player_id);
+
+void func_bankrupt(Game_t* game_ptr, int player_id);
+
+void func_pass_tool(Game_t* game_ptr,int player_id);
+
+void func_pass_gift(Game_t* game_ptr,int player_id);
+
+void func_pass_magic(Game_t* game_ptr,int player_id);
+
+int func_check_special_pos(Game_t* game_ptr, int pos);
+
+int func_check_some_one_here(Game_t* game_ptr, int pos);
 
 int scanf_num();
 char *func_scanf_str(char buf[]);
 int sizeof_num(int a);
+char scanf_char();
 
 void func_init_land(Land_t* land_ptr[]);
 

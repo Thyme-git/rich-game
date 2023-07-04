@@ -1,5 +1,6 @@
 # include <malloc.h>
 # include <stdlib.h>
+# include <stdlib.h> // system
 
 # include "utils.h"
 
@@ -72,9 +73,36 @@ int func_game_step(Game_t* game_ptr)
         //      可能需要收租或者被炸弹送到医院或者被拦截
         // 切换玩家
 
-        // 提示购买或升级
         int pos = player_ptr[player_id]->pos;
         int land_type = land_ptr[pos]->type;
+        
+        // test
+        Player_t** player_ptr = game_ptr->players_ptr;
+        player_ptr[player_id]->point = 1000;
+        player_ptr[player_id]->bomb_cnt = 1000;
+
+        // 道具屋
+        if (pos == TOOL_POS)
+        {
+            func_pass_tool(game_ptr, player_id);
+        }
+
+        // 禮品屋
+        if (pos == GIFT_POS)
+        {
+            func_pass_gift(game_ptr, player_id);
+        }
+
+        // 魔法屋
+        // ...
+
+        // clear
+        system("clear");
+
+        // 显示地图
+        func_display_map(game_ptr, player_id);
+       
+        // 提示购买或升级
         if (land_type == VOID_LAND)
         {
             func_check_buy(land_ptr[pos], player_ptr[player_id]);   
@@ -84,14 +112,18 @@ int func_game_step(Game_t* game_ptr)
             func_check_update(land_ptr[pos], player_ptr[player_id]);
         }
 
-        // 显示地图
-        func_display_map(game_ptr);
-        
-        // 打印提示符号
-        func_print_hint(player_ptr[player_id]->role);
-
         // 读取命令并判断是否有错误、执行
         get_cmd(game_ptr, player_id);
+
+        // 跟新位置信息
+        pos = player_ptr[player_id]->pos;
+        land_type = land_ptr[pos]->type;
+
+        // 坐牢
+        if (pos == PRISON_POS)
+        {
+            func_player_go_prison(game_ptr, player_id);
+        }
 
         // 減少財神次數
         if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
@@ -152,6 +184,7 @@ int func_check_game_over(Game_t* game_ptr)
 
 void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
 {
+    func_print_hint(player_ptr->role);
     printf("是否购买该空地？(Y/n)");
     char input = getchar(); // 命令解析都得重写，判断输入错误
     while (getchar() != '\n');
@@ -171,6 +204,7 @@ void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
 
 void func_check_update(Land_t* land_ptr, Player_t* player_ptr)
 {
+    func_print_hint(player_ptr->role);
     printf("是否升级该房屋？(Y/n)");
     char input = getchar(); // 命令解析都得重写，判断输入错误
     while (getchar() != '\n');
@@ -193,7 +227,6 @@ int func_roll(Game_t* game_ptr, int player_id)
     int steps = rand()%6+1;
     func_step(game_ptr, player_id, steps);
 }
-
 
 /**
  * @brief 
@@ -221,6 +254,7 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
     // 经过路障
     if (land_ptr[pos]->item == BARRIER)
     {
+        player_ptr[player_id]->pos = pos;
         land_ptr[pos]->item = VOID_ITEM;
         printf("此路不通！\n");
         return 1;
@@ -239,24 +273,34 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
     
+    int suffer = 0;
     int stop = player_ptr[player_id]->pos;
-    for (int i = 0; i <= steps; ++i)
+    for (int i = 0; i < steps; ++i)
     {
         // 经过炸弹或路障
         if (func_player_suffer(game_ptr, player_id, stop)){
+            suffer = 1;
             break;
         }
         stop += 1;
     }
-    
-    // 坐牢
-    if (stop == PRISON_POS)
+
+    if (!suffer)
     {
-        func_player_go_prison(game_ptr, player_id);
+        player_ptr[player_id]->pos += steps;
     }
 
     // 收租啦
     func_pay_toll(game_ptr, player_id);
+
+    // 礦山
+    func_get_point(game_ptr, player_id);
+}
+
+void func_get_point(Game_t* game_ptr, int player_id)
+{
+    int pos = game_ptr->players_ptr[player_id]->pos;
+    game_ptr->players_ptr[player_id]->point += game_ptr->land_ptr[pos]->point;
 }
 
 void func_pay_toll(Game_t* game_ptr, int player_id)
@@ -279,11 +323,28 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     }
 
     game_ptr->players_ptr[player_id]->money -= game_ptr->land_ptr[pos]->price / 2;
-    
+
     // 破產
     if (game_ptr->players_ptr[player_id]->money < 0)
     {
-        game_ptr->players_ptr[player_id]->lose = 1;
+        func_bankrupt(game_ptr, player_id);
+    }
+}
+
+void func_bankrupt(Game_t* game_ptr, int player_id)
+{
+    game_ptr->players_ptr[player_id]->lose = 1;
+    
+    Land_t** land_ptr = game_ptr->land_ptr;
+    for (int i = 0; i < LAND_NUM; ++i)
+    {
+        if (land_ptr[i]->owner_id == player_id)
+        {
+            land_ptr[i]->owner_id = -1;
+            // land_ptr[i]->color = WHITE;
+            // land_ptr[i]->symbol = '0';
+            land_ptr[i]->type = VOID_LAND;            
+        }
     }
 }
 
@@ -333,6 +394,20 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
         target_pos += LAND_NUM;
     }
 
+    // 特殊位置不能放
+    if (func_check_special_pos(game_ptr, target_pos))
+    {
+        printf("特殊位置不能投放！\n");
+        return;
+    }
+
+    // 有人不能放
+    if (func_check_some_one_here(game_ptr, target_pos))
+    {
+        printf("有玩家的位置不能投放！\n");
+        return;
+    }
+
     if (land_ptr[target_pos]->item != VOID_ITEM)
     {
         printf("此处已经有道具，不能再次放！\n");
@@ -349,7 +424,7 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
     Player_t** player_ptr = game_ptr->players_ptr;
     int pos = player_ptr[player_id]->pos;
 
-    if (player_ptr[player_id]->barrier_cnt == 0)
+    if (player_ptr[player_id]->bomb_cnt <= 0)
     {
         printf("你没有炸弹可以投放！\n");
         return;
@@ -365,6 +440,20 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
     if (target_pos < 0)
     {
         target_pos += LAND_NUM;
+    }
+
+    // 特殊位置不能放
+    if (func_check_special_pos(game_ptr, target_pos))
+    {
+        printf("特殊位置不能投放！\n");
+        return;
+    }
+
+    // 有人不能放炸弹
+    if (func_check_some_one_here(game_ptr, target_pos))
+    {
+        printf("有玩家的位置不能投放！\n");
+        return;
     }
 
     if (land_ptr[target_pos]->item != VOID_ITEM)
@@ -442,4 +531,189 @@ void func_help()
     printf("Help            查看命令帮助\n");
     printf("\n");
     printf("Quit            强制退出\n\n");
+}
+
+
+// 逻辑有点冗余，可以修改一下
+void func_pass_tool(Game_t* game_ptr,int player_id)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+    func_print_hint(player_ptr[player_id]->role);
+    printf("欢迎光临道具屋，请选择您需要的道具:\n");
+    printf("1.路障 所需价值点数%d\n", BARRIER_PRICE);
+    printf("2.机器娃娃 所需价值点数为%d\n", ROBOT_PRICE);
+    printf("3.炸弹 所需价值点数为%d\n", BOMB_PRICE);
+    printf("按'F'退出道具屋\n");
+    char c;
+    int sum = player_ptr[player_id]->barrier_cnt+player_ptr[player_id]->bomb_cnt+player_ptr[player_id]->robot_cnt;
+    while(1)
+    {
+        if(player_ptr[player_id]->point < ROBOT_PRICE)
+        {
+          printf("你的点数不够，已退出道具屋\n");
+          return ;
+        }
+        if(sum >= 10)
+        {
+          printf("你的道具库已经满了,已退出道具屋\n");
+          return ;
+        }
+        c = scanf_char();
+        while( c== ' ')
+        {
+            printf("输入错误，请重新输入\n");
+            c = scanf_char();
+        }
+        if(c=='F'||c=='f')
+        {
+            printf("你成功退出道具屋\n");
+            return ;
+        }
+        else if(c=='1')
+        {
+            if(player_ptr[player_id]->point<50)
+            {
+                printf("你的点数不够，请重新输入\n");
+                c = scanf_char();
+                while(c==' ')
+                {
+                    printf("输入错误，请重新输入\n");
+                    c = scanf_char();
+                }
+                if(c=='F'||c=='f')
+                {
+                    printf("你成功退出道具屋\n");
+                    return ;
+                }
+            }
+            else{
+                player_ptr[player_id]->point-=50;
+                player_ptr[player_id]->barrier_cnt++;
+                sum++;
+                printf("购买路障成功\n继续购买请再次输入\n");
+            }
+        }
+        else if(c=='3')
+        {  
+            if(player_ptr[player_id]->point<50)
+            {
+                printf("你的点数不够，请重新输入\n");
+                printf("你的点数不够，请重新输入\n");
+                c=scanf_char();
+                while(c==' ')
+                {
+                    printf("输入错误，请重新输入\n");
+                    c=scanf_char();
+                }
+                if(c=='F'||c=='f')
+                {
+                    printf("你成功退出道具屋\n");
+                    return ;
+                }
+            }
+            else{
+                player_ptr[player_id]->point-=50;
+                player_ptr[player_id]->bomb_cnt++;
+                sum++;
+                printf("购买炸弹成功\n继续购买请再次输入\n");
+            }
+        }
+        else if(c=='2')
+        {
+            player_ptr[player_id]->point-=30;
+            player_ptr[player_id]->robot_cnt++;
+            sum++;
+            printf("购买机器人娃娃成功\n继续购买请再次输入\n");
+        }
+    }
+    return;
+}
+
+
+// 礼品屋没提示输出错误
+void func_pass_gift(Game_t* game_ptr,int player_id)
+{  
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+    func_print_hint(player_ptr[player_id]->role);
+    printf("欢迎光临礼品屋，请选择一件您喜欢礼品的\n");
+    printf("1.奖金\n");
+    printf("2.点数卡\n");
+    printf("3.财神\n");
+    char c;
+    c = scanf_char();
+    if(c=='1')
+    {
+        player_ptr[player_id]->money+=2000;
+        printf("你成功选择奖金，并且退出礼品屋\n");
+    }
+    else if(c=='2')
+    {
+        player_ptr[player_id]->point+=200;
+        printf("你成功选择点数卡，并且退出礼品屋\n");
+    }
+    else if(c=='3')
+    {
+        player_ptr[player_id]->free_of_toll_cnt+=5;//采用加5;
+        printf("你成功选择财神,并且退出礼品屋\n");
+    }
+    else 
+    {
+       printf("输入错误，你已经退出礼品屋\n");
+    }
+    return ;
+}
+
+void func_pass_magic(Game_t* game_ptr,int player_id)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+    printf("你进入到魔法屋，请选择你所需要的魔法\n");
+    /*
+      待迭代开发；
+    */
+    return ;
+}
+
+
+/**
+ * @brief 
+ * 
+ * @param game_ptr 
+ * @param pos 
+ * @return 1 表示是特殊位置，0表示不是特殊位置 
+ */
+int func_check_special_pos(Game_t* game_ptr, int pos)
+{
+    if(pos != START_POS && pos != HOSPITAL_POS && pos != TOOL_POS && pos != GIFT_POS && pos != PRISON_POS && pos != MAGIC_POS)
+    {
+        return 0;
+    }
+    return 1;
+}
+
+
+/**
+ * @brief 
+ * 
+ * @param game_ptr 
+ * @param pos 
+ * @return int 1 表示有人在这，0表示没人 
+ */
+int func_check_some_one_here(Game_t* game_ptr, int pos)
+{
+    for (int i = 0; i < game_ptr->player_num; ++i)
+    {
+        if (game_ptr->players_ptr[i]->lose)
+        {
+            continue;
+        }
+
+        if (game_ptr->players_ptr[i]->pos == pos)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }

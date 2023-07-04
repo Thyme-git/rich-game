@@ -47,3 +47,23 @@ int sizeof_num(int a)
     else if(a<0&&a>-10) return 2;
     else  return 3;
 }
+
+char scanf_char()
+{
+    char c=' ';
+    char b=' ';
+    c=getchar();
+    while(c==' '||c=='\n')
+    {
+        c=getchar();
+    }
+    b=c;
+    c=getchar();
+    while(c==' ')
+    {
+        c=getchar();
+    }
+    if(c=='\n')
+    return b;
+    else return ' ';
+}

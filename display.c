@@ -24,7 +24,7 @@ void func_print_with_color(Color_enum color, char chr)
     printf("%s%c\033[0m", color_table[color], chr);
 }
 
-void func_display_map(Game_t* game_ptr)
+void func_display_map(Game_t* game_ptr, int player_id)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -44,12 +44,18 @@ void func_display_map(Game_t* game_ptr)
         land_ptr[i]->color = color;
     }
 
-    // 找出人的位置
+    // 找出人的位置，这里有一个优先级，需要修改
     for (int i = 0; i < player_num; ++i)
     {
-        int pos = player_ptr[i]->pos;
-        char symbol = role_symbol[player_ptr[i]->role];
+        int id = (player_id+1+i) % player_num;
+        if (player_ptr[id]->lose)
+        {
+            continue;
+        }
+        int pos = player_ptr[id]->pos;
+        char symbol = role_symbol[player_ptr[id]->role];
         land_ptr[pos]->symbol = symbol;
+        land_ptr[pos]->color = player_ptr[id]->color;
     }
 
     // 打印第一行
