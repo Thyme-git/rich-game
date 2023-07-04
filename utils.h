@@ -30,8 +30,10 @@
 # define ROBOT_PRICE 30
 # define BOMB_PRICE 50
 
-# define REGEX_MAX_LEN 32
+# define REGEX_MAX_LEN 64
 # define REGEX_NUM 18
+
+# include <regex.h>
 
 typedef enum _Color{
 	RED
@@ -149,7 +151,7 @@ typedef struct _Reg
 }Reg_t;
 
 
-void  get_cmd(Game_t* game_ptr, int player_id);
+void get_cmd(Game_t* game_ptr, int player_id);
 
 void func_print_hint(Role_enum role);
 void func_display_map(Game_t* game_ptr, int player_id);
@@ -221,12 +223,24 @@ int func_check_special_pos(Game_t* game_ptr, int pos);
 int func_check_some_one_here(Game_t* game_ptr, int pos);
 
 int scanf_num();
-char *func_scanf_str(char buf[]);
+void func_scanf_str(char buf[]);
 int sizeof_num(int a);
 char scanf_char();
 
 void func_init_land(Land_t* land_ptr[]);
 
 Player_t* func_init_player(Role_enum role, int id, int init_money);
+
+Reg_t* func_init_reg(const char* regex);
+
+int func_reg_match(Reg_t* reg_ptr, const char* str);
+
+void func_free_reg(Reg_t* reg_ptr);
+
+void func_init_all_reg();
+
+void func_free_all_reg();
+
+Order_enum func_match_order(const char* str);
 
 # endif

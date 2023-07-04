@@ -1,33 +1,8 @@
-# include <regex.h>
 # include <stdio.h>
 # include <string.h>
 # include <malloc.h>
 # include <stdlib.h>
 # include "utils.h"
-
-/*
-typedef enum _Order
-{
-    ORDER_ROLL    
-,   ORDER_ROBOT   
-,   ORDER_QUERY   
-,   ORDER_HELP    
-,   ORDER_QUIT    
-,   ORDER_STEP    
-,   ORDER_SELL    
-,   ORDER_BLOCK   
-,   ORDER_MONEY   
-,   ORDER_BUFF    
-,   ORDER_POINT   
-,   ORDER_STOP    
-,   ORDER_POS     
-,   ORDER_ITEM    
-,   ORDER_MAP     
-,   ORDER_UNMAP
-,   ORDER_BOMB
-,   ORDER_BARRIER
-}Order_enum;
-*/
 
 const char* regex[REGEX_NUM] =
 {
@@ -52,7 +27,7 @@ const char* regex[REGEX_NUM] =
 };
 // 使用方法regex[ORDER_ROLL] 获取 "^[ ]*roll *$"
 
-const Reg_t* reg_ptr[REGEX_NUM] = {NULL};
+Reg_t* reg_ptr[REGEX_NUM] = {NULL};
 
 
 Reg_t* func_init_reg(const char* regex)
@@ -96,6 +71,14 @@ void func_init_all_reg()
     }
 }
 
+void func_free_all_reg()
+{
+    for (int i = 0; i < REGEX_NUM; ++i)
+    {
+        func_free_reg(reg_ptr[i]);
+    }
+}
+
 /**
  * @brief 
  * 
@@ -106,10 +89,19 @@ Order_enum func_match_order(const char* str)
 {
     for (int i = 0; i < REGEX_NUM; ++i)
     {
-        if (func_reg_match(reg_ptr[i], regex[i]))
+        if (func_reg_match(reg_ptr[i], str))
         {
             return i;
         }
     }
     return -1;
 }
+
+// int main()
+// {
+//     const char* r = "^[ ]*roll *$";
+//     Reg_t* p = func_init_reg(r);
+//     char* str = "roll\0 000";
+//     printf("%d\n", func_reg_match(p, str));
+//     return 0;
+// }

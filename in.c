@@ -20,10 +20,10 @@ int scanf_num()
     return sum;
 }
 
-char *func_scanf_str(char buf[])
+void func_scanf_str(char buf[])
 {
     char c;
-    int i=0;
+    int i = 0;
     while((c = getchar())!='\n')
     {
         if(c != ' ')
@@ -33,8 +33,6 @@ char *func_scanf_str(char buf[])
         }
     }
     buf[i] = '\0';
-    char *str = buf;
-    return str;
 }
 
 int sizeof_num(int a)
