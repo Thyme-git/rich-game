@@ -26,11 +26,8 @@ void func_scanf_str(char buf[])
     int i = 0;
     while((c = getchar())!='\n')
     {
-        if(c != ' ')
-        {
-            buf[i]=c;
-            i++;
-        }
+        buf[i]=c;
+        i++;
     }
     buf[i] = '\0';
 }

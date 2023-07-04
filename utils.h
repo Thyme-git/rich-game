@@ -31,7 +31,7 @@
 # define BOMB_PRICE 50
 
 # define REGEX_MAX_LEN 64
-# define REGEX_NUM 18
+# define REGEX_NUM 19
 
 # include <regex.h>
 
@@ -136,11 +136,12 @@ typedef enum _Order
 ,   ORDER_POINT   
 ,   ORDER_STOP    
 ,   ORDER_POS     
-,   ORDER_ITEM    
-,   ORDER_MAP     
+,   ORDER_MAP    
+,   ORDER_ITEM     
 ,   ORDER_UNMAP
-,   ORDER_BOMB
+,   ORDER_SET_BOMB
 ,   ORDER_BARRIER
+,   ORDER_BOMB
 }Order_enum;
 
 typedef struct _Reg
@@ -221,6 +222,28 @@ void func_pass_magic(Game_t* game_ptr,int player_id);
 int func_check_special_pos(Game_t* game_ptr, int pos);
 
 int func_check_some_one_here(Game_t* game_ptr, int pos);
+
+// from here
+void func_set_barrier(Game_t* game_ptr, int barrier_pos);
+
+void func_set_unmap(Game_t* game_ptr, int unmap_pos);
+
+void func_set_bomb(Game_t* game_ptr, int bomb_pos);
+
+void func_set_stop(Game_t* game_ptr, const char name, int stop_time);
+
+void func_set_map(Game_t* game_ptr, const char name, int map_pos, int level);
+
+void func_set_money(Game_t* game_ptr, char role_char, int money_num);
+
+void func_set_buff(Game_t* game_ptr, const char name,int buff_num);
+
+void func_set_item(Game_t* game_ptr, const char name, int item_type, int item_num);
+
+void func_set_pos(Game_t* game_ptr, char name_char,int pos_num);
+
+void func_set_point(Game_t* game_ptr, char name_char, int point);
+// end
 
 int scanf_num();
 void func_scanf_str(char buf[]);

@@ -4,6 +4,8 @@
 
 # include "utils.h"
 
+extern const char role_symbol[ROLE_NUM];
+
 Game_t* func_init_game()
 {
     Game_t* game_ptr = (Game_t*)malloc(sizeof(Game_t));
@@ -77,9 +79,9 @@ int func_game_step(Game_t* game_ptr)
         int land_type = land_ptr[pos]->type;
         
         // test
-        Player_t** player_ptr = game_ptr->players_ptr;
-        player_ptr[player_id]->point = 1000;
-        player_ptr[player_id]->bomb_cnt = 1000;
+        // Player_t** player_ptr = game_ptr->players_ptr;
+        // player_ptr[player_id]->point = 1000;
+        // player_ptr[player_id]->bomb_cnt = 1000;
 
         // 道具屋
         if (pos == TOOL_POS)
@@ -306,7 +308,6 @@ void func_get_point(Game_t* game_ptr, int player_id)
 void func_pay_toll(Game_t* game_ptr, int player_id)
 {
     int pos = game_ptr->players_ptr[player_id]->pos;
-    int free_time = game_ptr->players_ptr[player_id]->free_of_toll_cnt;
     int owner_id = game_ptr->land_ptr[pos]->owner_id;
 
     // 土地沒有主人 或者 主人是自己 或者 主人在監獄中
@@ -323,10 +324,12 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     }
 
     game_ptr->players_ptr[player_id]->money -= game_ptr->land_ptr[pos]->price / 2;
+    game_ptr->players_ptr[owner_id]->money += game_ptr->land_ptr[pos]->price / 2;
 
     // 破產
     if (game_ptr->players_ptr[player_id]->money < 0)
     {
+        game_ptr->players_ptr[owner_id]->money += game_ptr->players_ptr[player_id]->money;
         func_bankrupt(game_ptr, player_id);
     }
 }
@@ -468,7 +471,9 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
     // 刚好炸到人
     for (int i = 0; i < game_ptr->player_num; ++i)
     {
-        func_player_suffer(game_ptr, i, pos+bomb_pos);
+        if (player_ptr[player_id]->pos == pos+bomb_pos){
+            func_player_suffer(game_ptr, i, pos+bomb_pos);
+        }
     }
 }
 
@@ -716,4 +721,150 @@ int func_check_some_one_here(Game_t* game_ptr, int pos)
         }
     }
     return 0;
+}
+
+
+// for test
+// good
+void func_set_barrier(Game_t* game_ptr, int barrier_pos)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    land_ptr[barrier_pos]->item = BARRIER;
+    return ;
+}
+
+// good
+void func_set_unmap(Game_t* game_ptr, int unmap_pos)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    land_ptr[unmap_pos]->owner_id = -1;
+    land_ptr[unmap_pos]->type = VOID_LAND;
+    return ;
+}
+
+// good
+void func_set_bomb(Game_t* game_ptr, int bomb_pos)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    land_ptr[bomb_pos]->item = BOMB;
+    return ;
+}
+
+// good，考虑+1
+void func_set_stop(Game_t* game_ptr, const char name_char, int stop_time)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
+    {
+       if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            player_ptr[player_id]->recovery_time_cnt = stop_time;
+            return ;
+        }
+    }
+    return ;
+}
+
+// good
+void func_set_map(Game_t* game_ptr, const char name_char, int map_pos, int level)
+{
+     Player_t** player_ptr = game_ptr->players_ptr;
+     Land_t** land_ptr = game_ptr->land_ptr;
+     for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
+     {
+        if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            land_ptr[map_pos]->owner_id = player_id;
+            land_ptr[map_pos]->type = level;
+            land_ptr[map_pos]->price = land_ptr[map_pos]->base_price * (level+1);
+            return;
+        }
+     }
+     return;
+}
+
+// good
+void func_set_money(Game_t* game_ptr, char role_char, int money_num)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0; player_id < game_ptr->player_num; player_id++)
+    {
+        if(role_symbol[player_ptr[player_id]->role] == role_char)
+        {
+            player_ptr[player_id]->money = money_num;
+            return;
+        }
+    }
+     return ;
+}
+
+// good , 没考虑+1
+void func_set_buff(Game_t* game_ptr, const char name_char,int buff_num)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0 ;player_id < game_ptr->player_num; player_id++)
+    {
+        if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            player_ptr[player_id]->free_of_toll_cnt = buff_num;
+            return ;
+        }
+    }
+     return ;
+}
+
+// good
+void func_set_item(Game_t* game_ptr, const char name_char, int item_type, int item_num)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
+    {
+        if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            if(item_type == BARRIER)
+            {
+                player_ptr[player_id]->barrier_cnt = item_num;
+            }
+            else if(item_type == ROBOT)
+            {
+                player_ptr[player_id]->robot_cnt = item_num;
+            }
+            else if(item_type == BOMB)
+            {
+                player_ptr[player_id]->bomb_cnt = item_num;
+            }
+            return;
+        }
+    }
+    return;
+}
+
+
+void func_set_pos(Game_t* game_ptr, char name_char, int pos_num)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
+    {
+        if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            player_ptr[player_id]->pos=pos_num;
+            return ;
+        }
+    }
+     return;
+}
+
+// good
+void func_set_point(Game_t* game_ptr, char name_char, int point)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    for(int player_id = 0; player_id < game_ptr->player_num; player_id++)
+    {
+        if(role_symbol[player_ptr[player_id]->role] == name_char)
+        {
+            player_ptr[player_id]->point = point;
+            return ;
+        }
+    }
+     return ;
 }
