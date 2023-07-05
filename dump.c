@@ -31,6 +31,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
                 fprintf(fin,"%c\n",role_symbol[player_ptr[i]->role]);
                 fprintf(fin,"alive %d\n",player_ptr[i]->lose?0:1);
                 fprintf(fin,"money %d\n",player_ptr[i]->money);
+                fprintf(fin,"point %d\n",player_ptr[i]->point);
                 fprintf(fin,"item1 %d\n",player_ptr[i]->barrier_cnt);
                 fprintf(fin,"item2 %d\n",player_ptr[i]->robot_cnt);
                 fprintf(fin,"item3 %d\n",player_ptr[i]->bomb_cnt);
@@ -45,6 +46,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
             fprintf(fin,"%c\n",role_symbol[role]);
             fprintf(fin,"alive %d\n",0);
             fprintf(fin,"money %d\n",0);
+            fprintf(fin,"point %d\n",0);
             fprintf(fin,"item1 %d\n",0);
             fprintf(fin,"item2 %d\n",0);
             fprintf(fin,"item3 %d\n",0);
