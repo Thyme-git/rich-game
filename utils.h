@@ -79,25 +79,31 @@ typedef enum _Item
 ,   BOMB // 炸弹
 }Item_enum; // 道具类型
 
-typedef struct _Land
-{
-    int type; // 土地的类型
-    int base_price; // 空地基础价格
-    int price; // 土地当前的价值，初始化为0，房子每升一次等级 += base_price
-    // int diduan; // 土地地段 考虑删除该属性，因为地段提供的价格信息包含在price中
-    int point; // 可以在此获取的点数
-    int owner_id; // 判断拥有者是谁，-1表示未占用
-    Item_enum item; // 道具类型，VOID_ITEM(0)表示没有
-    char symbol; // 显示的土地字符
-    Color_enum color; // 显示的土地颜色
-}Land_t;
-
 typedef enum _Role {
     ROLE_Q // 钱夫人
 ,   ROLE_A // 阿土伯
 ,   ROLE_S // 孙小美
 ,   ROLE_J // 金贝贝
 } Role_enum;
+
+typedef struct _Pri
+{
+    Role_enum role;
+    struct _Pri* next;
+}Privilige_t; // 人物优先级排序 Q A S 表示 QAS优先级依次下降,显示时显示优先级最低的。
+
+typedef struct _Land
+{
+    int type; // 土地的类型
+    int base_price; // 空地基础价格
+    int price; // 土地当前的价值，初始化为0，房子每升一次等级 += base_price
+    int point; // 可以在此获取的点数
+    int owner_id; // 判断拥有者是谁，-1表示未占用
+    Item_enum item; // 道具类型，VOID_ITEM(0)表示没有
+    char symbol; // 显示的土地字符
+    Color_enum color; // 显示的土地颜色
+    Privilige_t* privilige_role;
+}Land_t;
 
 typedef struct _Player
 {
@@ -198,6 +204,8 @@ void func_game_over(Game_t* game_ptr);
 
 int func_check_game_over(Game_t* game_ptr);
 
+void func_change_pos(Game_t* game_ptr, int player_id, int dst);
+
 void func_check_buy(Land_t* land_ptr, Player_t* player_ptr);
 
 void func_check_update(Land_t* land_ptr, Player_t* player_ptr);
@@ -267,6 +275,8 @@ void func_dump(Game_t *game_ptr,int player_id, FILE *fin);
 
 int func_check_is_player(char c);
 
+int func_check_someone_here(Game_t* game_ptr, int pos);
+
 // int func_player_id_to_symbol
 // end
 
@@ -295,5 +305,13 @@ void func_init_all_reg();
 void func_free_all_reg();
 
 Order_enum func_match_order(const char* str);
+
+Privilige_t* func_init_privilige();
+void func_pop(Privilige_t* role_pri_ptr, Role_enum role);
+void func_push(Privilige_t* role_pri_ptr, Role_enum role);
+Role_enum func_front(Privilige_t* role_pri_ptr);
+Role_enum func_tail(Privilige_t* role_pri_ptr);
+void func_free_pri(Privilige_t* role_pri_ptr);
+void func_get_pri_order(Privilige_t* ptr, char buf[]);
 
 # endif

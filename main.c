@@ -34,6 +34,9 @@ int main(int argc, char** argv)
         done = func_game_step(game_ptr);
     }
 
+    // close
+    fclose(dump_fp);
+
     // 释放正则表达式
     func_free_all_reg();
 

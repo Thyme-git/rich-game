@@ -63,9 +63,12 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     */
     func_update_map_info(game_ptr, player_id);
     for (int i = 0; i < LAND_NUM; ++i){
-        if (func_check_is_player(land_ptr[i]->symbol) && func_check_someone_here(game_ptr, i))
+        if (func_check_someone_here(game_ptr, i))
         {
-            fprintf(fin, "mapuser %d %c\n", i, land_ptr[i]->symbol);
+            char buf[ROLE_NUM];
+            func_get_pri_order(land_ptr[i]->privilige_role, buf);
+            fprintf(fin, "mapuser %d %s\n", i, buf);
+            // putchar('\n');
         }
     }
 

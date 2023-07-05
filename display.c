@@ -6,6 +6,7 @@ extern const char role_symbol[ROLE_NUM];
 const char* color_table[COLOR_NUM] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[0m"};
 const char item_symbol[ITEM_NUM] = {' ', '#', ' ',  '@'};
 // 使用方法：color_table[RED]获取字符串"\033[31m"
+extern const Color_enum role_color[ROLE_NUM];
 
 const char* role_hint[ROLE_NUM] = {
     "\033[31m钱夫人>\033[0m",
@@ -49,22 +50,14 @@ void func_update_map_info(Game_t* game_ptr, int player_id)
             land_ptr[i]->symbol = item_symbol[land_ptr[i]->item];
             land_ptr[i]->color = WHITE;
         }
-    }
 
-    // 找出人的位置，这里有一个优先级
-    for (int i = 0; i < player_num; ++i)
-    {
-        int id = (player_id+1+i) % player_num;
-        if (player_ptr[id]->lose)
+        if (func_check_some_one_here(game_ptr, i))
         {
-            continue;
+            Role_enum role = land_ptr[i]->privilige_role->next->role;
+            land_ptr[i]->symbol = role_symbol[role];
+            land_ptr[i]->color = role_color[role];
         }
-        int pos = player_ptr[id]->pos;
-        char symbol = role_symbol[player_ptr[id]->role];
-        land_ptr[pos]->symbol = symbol;
-        land_ptr[pos]->color = player_ptr[id]->color;
     }
-
 }
 
 

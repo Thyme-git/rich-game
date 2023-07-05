@@ -14,6 +14,9 @@ Game_t* func_init_game()
     // 输入玩家初始基金
     func_init_money(game_ptr);
 
+    // 初始化Land
+    func_init_land(game_ptr->land_ptr);
+
     // 输入角色
     Role_enum order[ROLE_NUM];
     get_role_order(order);
@@ -23,12 +26,10 @@ Game_t* func_init_game()
         {
             break;
         }
+        func_push(game_ptr->land_ptr[START_POS]->privilige_role, order[i]);
         game_ptr->players_ptr[i] = func_init_player(order[i], i, game_ptr->init_money);
         game_ptr->player_num += 1;
     }
-
-    // 初始化Land
-    func_init_land(game_ptr->land_ptr);
 
     return game_ptr;
 }
@@ -145,6 +146,7 @@ void func_free_mem(Game_t* game_ptr)
     }
     for (int i = 0; i < LAND_NUM; ++i)
     {
+        func_free_pri(game_ptr->land_ptr[i]->privilige_role);
         free(game_ptr->land_ptr[i]);
     }
 }
@@ -239,7 +241,8 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
     // 被炸伤了
     if (land_ptr[pos]->item == BOMB)
     {
-        player_ptr[player_id]->pos = HOSPITAL_POS;
+        // player_ptr[player_id]->pos = HOSPITAL_POS;
+        func_change_pos(game_ptr, player_id, HOSPITAL_POS);
         player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
         land_ptr[pos]->item = VOID_ITEM;
         printf("被炸伤啦，送往医院！\n");
@@ -269,8 +272,9 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     
     for (int i = 0; i < steps; ++i)
     {
+        // player_ptr[player_id]->pos += 1;
+        func_change_pos(game_ptr, player_id, player_ptr[player_id]->pos+1);
         // 经过炸弹或路障
-        player_ptr[player_id]->pos += 1;
         if (func_player_suffer(game_ptr, player_id, player_ptr[player_id]->pos)){
             break;
         }
@@ -316,14 +320,14 @@ void func_bankrupt(Game_t* game_ptr, int player_id)
 {
     game_ptr->players_ptr[player_id]->lose = 1;
     game_ptr->players_ptr[player_id]->money = 0;
-
     Land_t** land_ptr = game_ptr->land_ptr;
+    func_pop(land_ptr[game_ptr->players_ptr[player_id]->pos]->privilige_role, game_ptr->players_ptr[player_id]->role);
     for (int i = 0; i < LAND_NUM; ++i)
     {
         if (land_ptr[i]->owner_id == player_id)
         {
             land_ptr[i]->owner_id = -1;
-            land_ptr[i]->type = VOID_LAND;            
+            land_ptr[i]->type = VOID_LAND;
         }
     }
 }
@@ -645,21 +649,18 @@ int func_check_special_pos(Game_t* game_ptr, int pos)
  */
 int func_check_some_one_here(Game_t* game_ptr, int pos)
 {
-    for (int i = 0; i < game_ptr->player_num; ++i)
-    {
-        if (game_ptr->players_ptr[i]->lose)
-        {
-            continue;
-        }
-
-        if (game_ptr->players_ptr[i]->pos == pos)
-        {
-            return 1;
-        }
-    }
-    return 0;
+    return game_ptr->land_ptr[pos]->privilige_role->next != NULL;
 }
 
+void func_change_pos(Game_t* game_ptr, int player_id, int dst)
+{
+    Player_t** player_ptr = game_ptr->players_ptr;
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Role_enum role = player_ptr[player_id]->role;
+    func_pop(land_ptr[player_ptr[player_id]->pos]->privilige_role, role);
+    func_push(land_ptr[dst]->privilige_role, role);
+    player_ptr[player_id]->pos = dst;
+}
 
 // for test
 void func_set_barrier(Game_t* game_ptr, int barrier_pos)
@@ -775,11 +776,11 @@ void func_set_pos(Game_t* game_ptr, char name_char, int pos_num)
     {
         if(role_symbol[player_ptr[player_id]->role] == name_char)
         {
-            player_ptr[player_id]->pos=pos_num;
+            func_change_pos(game_ptr, player_id,  pos_num);
             return ;
         }
     }
-     return;
+    return;
 }
 
 void func_set_point(Game_t* game_ptr, char name_char, int point)

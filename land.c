@@ -26,6 +26,8 @@ void func_init_land(Land_t* land_ptr[])
         land_ptr[i]->point = 0;
         land_ptr[i]->owner_id = -1; // 没有占用
         land_ptr[i]->item = VOID_ITEM;
+
+        land_ptr[i]->privilige_role = func_init_privilige();
     }
 
     // 初始化特殊类型
