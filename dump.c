@@ -63,7 +63,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     */
     func_update_map_info(game_ptr, player_id);
     for (int i = 0; i < LAND_NUM; ++i){
-        if (func_check_is_player(land_ptr[i]->symbol))
+        if (func_check_is_player(land_ptr[i]->symbol) && func_check_someone_here(game_ptr, i))
         {
             fprintf(fin, "mapuser %d %c\n", i, land_ptr[i]->symbol);
         }
@@ -85,6 +85,18 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
             fflush(fin);
         }
     }
+}
+
+int func_check_someone_here(Game_t* game_ptr, int pos)
+{
+    for (int i = 0; i < game_ptr->player_num; ++i)
+    {
+        if (game_ptr->players_ptr[i]->pos == pos)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int func_check_is_player(char c)
