@@ -18,6 +18,7 @@
 # define LAND_TYPE_NUM 11
 
 # define ROLE_NUM 4 // 角色数量
+# define ROLE_VOID (-1) // 角色不存在
 
 # define DEFAULT_INIT_MONEY 10000
 # define MAX_INIT_MONEY 50000
@@ -32,6 +33,8 @@
 
 # define REGEX_MAX_LEN 64
 # define REGEX_NUM 19
+
+# define INPUT_BUFFER_SIZE 1024
 
 # include <regex.h>
 
@@ -166,6 +169,8 @@ void func_print_with_color(Color_enum color, char chr);
  */
 Game_t* func_init_game();
 
+void func_init_money(Game_t* game_ptr);
+
 /**
  * @brief 
  * 使用方法
@@ -223,7 +228,9 @@ int func_check_special_pos(Game_t* game_ptr, int pos);
 
 int func_check_some_one_here(Game_t* game_ptr, int pos);
 
-// from here
+void get_role_order(Role_enum order[]);
+
+// from here test
 void func_set_barrier(Game_t* game_ptr, int barrier_pos);
 
 void func_set_unmap(Game_t* game_ptr, int unmap_pos);

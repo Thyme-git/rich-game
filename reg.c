@@ -26,9 +26,12 @@ const char* regex[REGEX_NUM] =
 ,   "^[ ]*set[ ]+barrier[ ]+[0-9]+ *$"
 ,   "^[ ]*bomb[ ]+(0|[-]?[1-9]+[0-9]*) *$" // block 09
 };
-// 使用方法regex[ORDER_ROLL] 获取 "^[ ]*roll *$"
 
+// 使用方法regex[ORDER_ROLL] 获取 "^[ ]*roll *$"
 Reg_t* reg_ptr[REGEX_NUM] = {NULL};
+
+// 获取输入角色的表达式（不含去重）
+const char* get_role_regex = "[ ]*[1-4]{2,5}[ ]*$";
 
 
 Reg_t* func_init_reg(const char* regex)
@@ -101,8 +104,9 @@ Order_enum func_match_order(const char* str)
 // int main()
 // {
 //     const char* r = "^[ ]*roll *$";
+//     char* str = "roll";
 //     Reg_t* p = func_init_reg(r);
-//     char* str = "roll\0 000";
-//     printf("%d\n", func_reg_match(p, str));
+//     int ret = func_reg_match(p, str);
+//     printf("%d, %d, %d\n", ret, p->reg_match.rm_so, p->reg_match.rm_eo);
 //     return 0;
 // }

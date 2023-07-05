@@ -5,6 +5,7 @@
 # include "utils.h"
 
 extern const char role_symbol[ROLE_NUM];
+extern const char* get_role_regex;
 
 Game_t* func_init_game()
 {
@@ -12,6 +13,29 @@ Game_t* func_init_game()
     game_ptr->player_num = 0;
 
     // 输入玩家初始基金
+    func_init_money(game_ptr);
+
+    // 输入角色
+    Role_enum order[ROLE_NUM];
+    get_role_order(order);
+    for (int i = 0; i < ROLE_NUM; ++i)
+    {
+        if (order[i] == ROLE_VOID)
+        {
+            break;
+        }
+        game_ptr->players_ptr[i] = func_init_player(order[i], i, game_ptr->init_money);
+        game_ptr->player_num += 1;
+    }
+
+    // 初始化Land
+    func_init_land(game_ptr->land_ptr);
+
+    return game_ptr;
+}
+
+void func_init_money(Game_t* game_ptr)
+{
     game_ptr->init_money = DEFAULT_INIT_MONEY;
     printf("输入玩家初始资金[%d~%d](默认 %d) 或者输入回车跳过:", MIN_INIT_MONEY, MAX_INIT_MONEY, DEFAULT_INIT_MONEY);
     
@@ -23,25 +47,6 @@ Game_t* func_init_game()
         game_ptr->init_money = input_money;
         printf("资金初始化为 %d\n", input_money);
     }
-
-    // 输入角色
-    printf("请选择2~4个角色：1.钱夫人 2.阿土伯 3.孙小美 4.金贝贝，可自由排序");
-    char role = getchar();
-    while(role != '\n')
-    {
-        role -= '1';
-        if( role < 4 && role >= 0)
-        {
-            game_ptr->players_ptr[game_ptr->player_num] = func_init_player(role, game_ptr->player_num, game_ptr->init_money);
-        }
-        role = getchar();
-        game_ptr->player_num += 1;
-    }
-
-    // 初始化Land
-    func_init_land(game_ptr->land_ptr);
-
-    return game_ptr;
 }
 
 int func_game_step(Game_t* game_ptr)
@@ -67,21 +72,8 @@ int func_game_step(Game_t* game_ptr)
             continue;
         }
 
-        // 可能提示购买空地或升级 
-        // 打印提示符号 
-        // 读取命令并判断是否有错误
-        // 执行相应的命令
-        //      摇骰子
-        //      可能需要收租或者被炸弹送到医院或者被拦截
-        // 切换玩家
-
         int pos = player_ptr[player_id]->pos;
         int land_type = land_ptr[pos]->type;
-        
-        // test
-        // Player_t** player_ptr = game_ptr->players_ptr;
-        // player_ptr[player_id]->point = 1000;
-        // player_ptr[player_id]->bomb_cnt = 1000;
 
         // 道具屋
         if (pos == TOOL_POS)
@@ -134,6 +126,55 @@ int func_game_step(Game_t* game_ptr)
         }
     }
     return 0;
+}
+
+/*  
+获得角色顺序，例如输入"123"获得顺序为"0 1 2 -1",前面和后面可加空格，中间不可
+*/
+void get_role_order(Role_enum order[])
+{
+    Reg_t* reg_ptr = func_init_reg(get_role_regex);
+    int done = 0;
+    char str[INPUT_BUFFER_SIZE];
+    int check_occur = 0;
+    int player_num = 0;
+
+    for (int i = 0; i < ROLE_NUM; ++i)
+    {
+        order[i] = ROLE_VOID;
+    }
+
+    printf("请选择2~4个角色：1.钱夫人 2.阿土伯 3.孙小美 4.金贝贝，可自由排序");
+    while (!done)
+    {
+        check_occur = 0;
+        func_scanf_str(str);
+        done = func_reg_match(reg_ptr, str);
+        if (done)
+        {
+            for (int i = 0; i < reg_ptr->reg_match.rm_eo; ++i)
+            {
+                if (str[i] == ' ')
+                {
+                    continue;
+                }
+                
+                Role_enum role = str[i]-'1';
+                if (check_occur & (1 << role))
+                {
+                    done = 0;
+                    break;
+                }
+                check_occur |= (1 << role);
+                order[player_num++] = role;
+            }
+        }
+
+        if (!done)
+        {
+            printf("输入错误，请重新输入\n");
+        }
+    }
 }
 
 void func_free_mem(Game_t* game_ptr)
@@ -725,7 +766,6 @@ int func_check_some_one_here(Game_t* game_ptr, int pos)
 
 
 // for test
-// good
 void func_set_barrier(Game_t* game_ptr, int barrier_pos)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
@@ -733,7 +773,6 @@ void func_set_barrier(Game_t* game_ptr, int barrier_pos)
     return ;
 }
 
-// good
 void func_set_unmap(Game_t* game_ptr, int unmap_pos)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
@@ -742,7 +781,6 @@ void func_set_unmap(Game_t* game_ptr, int unmap_pos)
     return ;
 }
 
-// good
 void func_set_bomb(Game_t* game_ptr, int bomb_pos)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
@@ -750,7 +788,6 @@ void func_set_bomb(Game_t* game_ptr, int bomb_pos)
     return ;
 }
 
-// good，考虑+1
 void func_set_stop(Game_t* game_ptr, const char name_char, int stop_time)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -765,7 +802,6 @@ void func_set_stop(Game_t* game_ptr, const char name_char, int stop_time)
     return ;
 }
 
-// good
 void func_set_map(Game_t* game_ptr, const char name_char, int map_pos, int level)
 {
      Player_t** player_ptr = game_ptr->players_ptr;
@@ -783,7 +819,6 @@ void func_set_map(Game_t* game_ptr, const char name_char, int map_pos, int level
      return;
 }
 
-// good
 void func_set_money(Game_t* game_ptr, char role_char, int money_num)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -798,7 +833,6 @@ void func_set_money(Game_t* game_ptr, char role_char, int money_num)
      return ;
 }
 
-// good , 没考虑+1
 void func_set_buff(Game_t* game_ptr, const char name_char,int buff_num)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -813,7 +847,6 @@ void func_set_buff(Game_t* game_ptr, const char name_char,int buff_num)
      return ;
 }
 
-// good
 void func_set_item(Game_t* game_ptr, const char name_char, int item_type, int item_num)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -839,7 +872,6 @@ void func_set_item(Game_t* game_ptr, const char name_char, int item_type, int it
     return;
 }
 
-
 void func_set_pos(Game_t* game_ptr, char name_char, int pos_num)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
@@ -854,7 +886,6 @@ void func_set_pos(Game_t* game_ptr, char name_char, int pos_num)
      return;
 }
 
-// good
 void func_set_point(Game_t* game_ptr, char name_char, int point)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
