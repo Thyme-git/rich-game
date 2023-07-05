@@ -25,6 +25,7 @@ const char* regex[REGEX_NUM] =
 ,   "^[ ]*set[ ]+bomb[ ]+[0-9]+ *$"
 ,   "^[ ]*set[ ]+barrier[ ]+[0-9]+ *$"
 ,   "^[ ]*bomb[ ]+(0|[-]?[1-9]+[0-9]*) *$" // block 09
+,   "^[ ]*dump[ ]*$"
 };
 
 // 使用方法regex[ORDER_ROLL] 获取 "^[ ]*roll *$"
@@ -38,7 +39,9 @@ const char* get_num_regex = "^[ ]*(0|[1-9]+[0-9]*)[ ]*$";
 
 const char* get_yes_no_regex = "^[ ]*[ynYN][ ]*$";
 
-// const char* get_item_regex = ""
+const char* get_item_regex = "^[ ]*[123Ff][ ]*$";
+
+const char* get_gift_regex = "^[ ]*[123][ ]*$";
 
 Reg_t* func_init_reg(const char* regex)
 {

@@ -4,8 +4,7 @@
 
 # include "utils.h"
 
-extern const char role_symbol[ROLE_NUM];
-extern const char* get_role_regex;
+extern char role_symbol[ROLE_NUM];
 
 Game_t* func_init_game()
 {
@@ -133,64 +132,8 @@ int func_game_step(Game_t* game_ptr)
 
         // 收租啦
         func_pay_toll(game_ptr, player_id);
-
-        // 跟新位置信息
-        pos = player_ptr[player_id]->pos;
-        land_type = land_ptr[pos]->type;
     }
     return 0;
-}
-
-/*  
-获得角色顺序，例如输入"123"获得顺序为"0 1 2 -1",前面和后面可加空格，中间不可
-*/
-void get_role_order(Role_enum order[])
-{
-    Reg_t* reg_ptr = func_init_reg(get_role_regex);
-    int done = 0;
-    char str[INPUT_BUFFER_SIZE];
-    int check_occur = 0;
-    int player_num = 0;
-
-    for (int i = 0; i < ROLE_NUM; ++i)
-    {
-        order[i] = ROLE_VOID;
-    }
-
-    while (!done)
-    {
-        player_num = 0;
-        check_occur = 0;
-
-        printf("请选择2~4个角色：1.钱夫人 2.阿土伯 3.孙小美 4.金贝贝，可自由排序");
-        func_scanf_str(str);
-        done = func_reg_match(reg_ptr, str);
-        if (done)
-        {
-            for (int i = 0; i < reg_ptr->reg_match.rm_eo; ++i)
-            {
-                if (str[i] == ' ')
-                {
-                    continue;
-                }
-                
-                Role_enum role = str[i]-'1';
-                if (check_occur & (1 << role))
-                {
-                    done = 0;
-                    break;
-                }
-                check_occur |= (1 << role);
-                order[player_num++] = role;
-            }
-        }
-
-        if (!done)
-        {
-            printf("输入错误，请重新输入\n");
-        }
-    }
-    func_free_reg(reg_ptr);
 }
 
 void func_free_mem(Game_t* game_ptr)
@@ -297,7 +240,7 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
     if (land_ptr[pos]->item == BOMB)
     {
         player_ptr[player_id]->pos = HOSPITAL_POS;
-        player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME+1;
+        player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
         land_ptr[pos]->item = VOID_ITEM;
         printf("被炸伤啦，送往医院！\n");
         return 1;
@@ -306,7 +249,6 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
     // 经过路障
     if (land_ptr[pos]->item == BARRIER)
     {
-        player_ptr[player_id]->pos = pos;
         land_ptr[pos]->item = VOID_ITEM;
         printf("此路不通！\n");
         return 1;
@@ -317,7 +259,7 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
 void func_player_go_prison(Game_t* game_ptr, int player_id)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
-    player_ptr[player_id]->recovery_time_cnt = PRISON_TIME+1; // magic number 🤡
+    player_ptr[player_id]->recovery_time_cnt = PRISON_TIME;
 }
 
 void func_step(Game_t* game_ptr, int player_id, int steps)
@@ -325,21 +267,13 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
     
-    int suffer = 0;
-    int stop = player_ptr[player_id]->pos;
     for (int i = 0; i < steps; ++i)
     {
         // 经过炸弹或路障
-        if (func_player_suffer(game_ptr, player_id, stop)){
-            suffer = 1;
+        player_ptr[player_id]->pos += 1;
+        if (func_player_suffer(game_ptr, player_id, player_ptr[player_id]->pos)){
             break;
         }
-        stop += 1;
-    }
-
-    if (!suffer)
-    {
-        player_ptr[player_id]->pos += steps;
     }
 }
 
@@ -373,7 +307,7 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     // 破產
     if (game_ptr->players_ptr[player_id]->money < 0)
     {
-        game_ptr->players_ptr[owner_id]->money += game_ptr->players_ptr[player_id]->money;
+        game_ptr->players_ptr[owner_id]->money -= game_ptr->land_ptr[pos]->price / 2;
         func_bankrupt(game_ptr, player_id);
     }
 }
@@ -381,15 +315,14 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
 void func_bankrupt(Game_t* game_ptr, int player_id)
 {
     game_ptr->players_ptr[player_id]->lose = 1;
-    
+    game_ptr->players_ptr[player_id]->money = 0;
+
     Land_t** land_ptr = game_ptr->land_ptr;
     for (int i = 0; i < LAND_NUM; ++i)
     {
         if (land_ptr[i]->owner_id == player_id)
         {
             land_ptr[i]->owner_id = -1;
-            // land_ptr[i]->color = WHITE;
-            // land_ptr[i]->symbol = '0';
             land_ptr[i]->type = VOID_LAND;            
         }
     }
@@ -583,108 +516,60 @@ void func_help()
 }
 
 
-// 逻辑有点冗余，可以修改一下
 void func_pass_tool(Game_t* game_ptr,int player_id)
 {
+    int done = 0;
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
-    func_print_hint(player_ptr[player_id]->role);
     printf("欢迎光临道具屋，请选择您需要的道具:\n");
     printf("1.路障 所需价值点数%d\n", BARRIER_PRICE);
     printf("2.机器娃娃 所需价值点数为%d\n", ROBOT_PRICE);
     printf("3.炸弹 所需价值点数为%d\n", BOMB_PRICE);
     printf("按'F'退出道具屋\n");
+    // func_print_hint(player_ptr[player_id]->role);
 
-    if (func_count_item_num(player_ptr[player_id]) >= MAX_ITEM_NUM)
+    if (player_ptr[player_id]->point < MIN_ITEM_PRICE)
     {
-        printf("背包已经满了（%d/%d），不能再购买道具！\n", MAX_ITEM_NUM, MAX_ITEM_NUM);
+        printf("点数少于最少点数的道具，退出道具屋！\n");
         return;
     }
 
-    
-
-    // char c;
-    // int sum = player_ptr[player_id]->barrier_cnt+player_ptr[player_id]->bomb_cnt+player_ptr[player_id]->robot_cnt;
-    // while(1)
-    // {
-    //     if(player_ptr[player_id]->point < ROBOT_PRICE)
-    //     {
-    //       printf("你的点数不够，已退出道具屋\n");
-    //       return ;
-    //     }
-    //     if(sum >= MAX_ITEM_NUM)
-    //     {
-    //       printf("你的道具库已经满了,已退出道具屋\n");
-    //       return ;
-    //     }
-    //     c = scanf_char();
-    //     while( c== ' ')
-    //     {
-    //         printf("输入错误，请重新输入\n");
-    //         c = scanf_char();
-    //     }
-    //     if(c=='F'||c=='f')
-    //     {
-    //         printf("你成功退出道具屋\n");
-    //         return ;
-    //     }
-    //     else if(c=='1')
-    //     {
-    //         if(player_ptr[player_id]->point<50)
-    //         {
-    //             printf("你的点数不够，请重新输入\n");
-    //             c = scanf_char();
-    //             while(c==' ')
-    //             {
-    //                 printf("输入错误，请重新输入\n");
-    //                 c = scanf_char();
-    //             }
-    //             if(c=='F'||c=='f')
-    //             {
-    //                 printf("你成功退出道具屋\n");
-    //                 return ;
-    //             }
-    //         }
-    //         else{
-    //             player_ptr[player_id]->point-=50;
-    //             player_ptr[player_id]->barrier_cnt++;
-    //             sum++;
-    //             printf("购买路障成功\n继续购买请再次输入\n");
-    //         }
-    //     }
-    //     else if(c=='3')
-    //     {  
-    //         if(player_ptr[player_id]->point<50)
-    //         {
-    //             printf("你的点数不够，请重新输入\n");
-    //             printf("你的点数不够，请重新输入\n");
-    //             c=scanf_char();
-    //             while(c==' ')
-    //             {
-    //                 printf("输入错误，请重新输入\n");
-    //                 c=scanf_char();
-    //             }
-    //             if(c=='F'||c=='f')
-    //             {
-    //                 printf("你成功退出道具屋\n");
-    //                 return ;
-    //             }
-    //         }
-    //         else{
-    //             player_ptr[player_id]->point-=50;
-    //             player_ptr[player_id]->bomb_cnt++;
-    //             sum++;
-    //             printf("购买炸弹成功\n继续购买请再次输入\n");
-    //         }
-    //     }
-    //     else if(c=='2')
-    //     {
-    //         player_ptr[player_id]->point-=30;
-    //         player_ptr[player_id]->robot_cnt++;
-    //         sum++;
-    //         printf("购买机器人娃娃成功\n继续购买请再次输入\n");
-    //     }
-    // }
+    while (!done)
+    {
+        Item_enum choice = func_get_item(player_ptr[player_id]->role);
+        if (choice == VOID_ITEM){
+            done = 1;
+        }else if (func_count_item_num(player_ptr[player_id]) >= MAX_ITEM_NUM){
+            printf("背包已经满了（%d/%d），不能再购买道具！\n", MAX_ITEM_NUM, MAX_ITEM_NUM);
+        }else if (choice == BARRIER){
+            if (player_ptr[player_id]->money < BARRIER_PRICE)
+            {
+                printf("你的点数不足，请重新选择！\n");
+            }else{
+                player_ptr[player_id]->money -= BARRIER_PRICE;
+                player_ptr[player_id]->barrier_cnt += 1;
+                printf("购买成功！\n");
+            }
+        }else if (choice == ROBOT){
+            if (player_ptr[player_id]->money < ROBOT_PRICE)
+            {
+                printf("你的点数不足，请重新选择！\n");
+            }else{
+                player_ptr[player_id]->money -= ROBOT_PRICE;
+                player_ptr[player_id]->robot_cnt += 1;
+                printf("购买成功！\n");
+            }
+        }else if (choice == BOMB){
+            if (player_ptr[player_id]->money < BOMB_PRICE)
+            {
+                printf("你的点数不足，请重新选择！\n");
+            }else{
+                player_ptr[player_id]->money -= BOMB_PRICE;
+                player_ptr[player_id]->bomb_cnt += 1;
+                printf("购买成功！\n");
+            }
+        }
+    }
     return;
 }
 
@@ -698,29 +583,29 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     printf("1.奖金\n");
     printf("2.点数卡\n");
     printf("3.财神\n");
-    char c;
-    c = scanf_char();
-    if(c=='1')
+    switch (func_get_gift(player_ptr[player_id]->role))
     {
-        player_ptr[player_id]->money+=2000;
-        printf("你成功选择奖金，并且退出礼品屋\n");
-    }
-    else if(c=='2')
-    {
-        player_ptr[player_id]->point+=200;
-        printf("你成功选择点数卡，并且退出礼品屋\n");
-    }
-    else if(c=='3')
-    {
-        player_ptr[player_id]->free_of_toll_cnt+=5;//采用加5;
-        printf("你成功选择财神,并且退出礼品屋\n");
-    }
-    else 
-    {
-       printf("输入错误，你已经退出礼品屋\n");
+    case -1:
+        printf("输入错误，放弃选择！\n");
+        break;
+    case 1:
+        printf("获得奖金%d!\n", GIFT_MONEY);
+        player_ptr[player_id]->money += GIFT_MONEY;
+        break;
+    case 2:
+        printf("获得点数%d!\n", GIFT_POINT);
+        player_ptr[player_id]->point += GIFT_POINT;
+        break;
+    case 3:
+        printf("获得财神祝福%d回合!\n", GIFT_BLESS);
+        player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS+1;
+        break;
+    default:
+        break;
     }
     return ;
 }
+
 
 void func_pass_magic(Game_t* game_ptr,int player_id)
 {

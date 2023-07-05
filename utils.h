@@ -28,16 +28,25 @@
 # define ITEM_NUM 4
 # define MAX_ITEM_NUM 10
 
+# define GIFT_MONEY 2000
+# define GIFT_POINT 200
+# define GIFT_BLESS 5
+
 # define BARRIER_PRICE 50
 # define ROBOT_PRICE 30
 # define BOMB_PRICE 50
+# define MIN_ITEM_PRICE (BARRIER_PRICE > ROBOT_PRICE ?          \
+    (ROBOT_PRICE > BOMB_PRICE ? BOMB_PRICE : ROBOT_PRICE) :     \
+    (BARRIER_PRICE > BOMB_PRICE ? BOMB_PRICE : BARRIER_PRICE)   \
+    )
 
 # define REGEX_MAX_LEN 64
-# define REGEX_NUM 19
+# define REGEX_NUM 20
 
 # define INPUT_BUFFER_SIZE 1024
 
 # include <regex.h>
+# include <stdio.h>
 
 typedef enum _Color{
 	RED
@@ -146,6 +155,7 @@ typedef enum _Order
 ,   ORDER_SET_BOMB
 ,   ORDER_BARRIER
 ,   ORDER_BOMB
+,   ORDER_DUMP
 }Order_enum;
 
 typedef struct _Reg
@@ -251,10 +261,15 @@ void func_set_item(Game_t* game_ptr, const char name, int item_type, int item_nu
 void func_set_pos(Game_t* game_ptr, char name_char,int pos_num);
 
 void func_set_point(Game_t* game_ptr, char name_char, int point);
+
+void func_dump(Game_t *game_ptr,int player_id, FILE *fin);
 // end
 
 int scanf_num();
 int func_check_yes_or_no(const char* hint, Role_enum role);
+int func_check_blank_input(char buf[]);
+Item_enum func_get_item(Role_enum role);
+int func_get_gift(Role_enum role);
 void func_scanf_str(char buf[]);
 int sizeof_num(int a);
 char scanf_char();

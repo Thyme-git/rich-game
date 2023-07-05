@@ -1,12 +1,20 @@
 # include <stddef.h>
+# include <stdlib.h>
 # include "utils.h"
 
-// extern int init_money; // 初始化资金 in player.c
-// extern Player_t players[ROLE_NUM]; // 最多四个人 in player.c 考虑换成指针
-// extern int player_num; // 玩家数量 in player.c
+extern FILE* dump_fp;
 
-int main()
+int main(int argc, char** argv)
 {
+    if (argc > 1)
+    {
+        dump_fp = fopen(argv[1], "w");
+        if (dump_fp == NULL){
+            printf("打开文件%s失败！\n", argv[1]);
+            exit(-1);
+        }
+    }
+
     // 初始化正则表达式
     func_init_all_reg();
 

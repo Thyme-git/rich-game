@@ -2,6 +2,8 @@
 # include <string.h>
 # include "utils.h"
 
+extern FILE* dump_fp;
+
 void get_cmd(Game_t* game_ptr, int player_id)
 {
     int flag = 0;
@@ -120,6 +122,9 @@ void get_cmd(Game_t* game_ptr, int player_id)
         {
             sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
             func_set_bomb(game_ptr, step[0]);
+        }else if (index == ORDER_DUMP)
+        {
+            func_dump(game_ptr , player_id, dump_fp);
         }
     }  
 }
