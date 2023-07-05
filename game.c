@@ -98,7 +98,7 @@ int func_game_step(Game_t* game_ptr)
         int land_type = land_ptr[pos]->type;
 
         // 提示购买或升级
-        if (land_type == VOID_LAND)
+        if (land_type == VOID_LAND && land_ptr[pos]->owner_id == -1)
         {
             func_check_buy(land_ptr[pos], player_ptr[player_id]);   
         }
@@ -654,6 +654,7 @@ int func_check_some_one_here(Game_t* game_ptr, int pos)
 
 void func_change_pos(Game_t* game_ptr, int player_id, int dst)
 {
+    dst = dst % LAND_NUM;
     Player_t** player_ptr = game_ptr->players_ptr;
     Land_t** land_ptr = game_ptr->land_ptr;
     Role_enum role = player_ptr[player_id]->role;
