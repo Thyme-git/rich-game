@@ -36,7 +36,12 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
                 fprintf(fin,"item2 %d\n",player_ptr[i]->robot_cnt);
                 fprintf(fin,"item3 %d\n",player_ptr[i]->bomb_cnt);
                 fprintf(fin,"buff %d\n",player_ptr[i]->free_of_toll_cnt);
-                fprintf(fin,"stop %d\n",player_ptr[i]->recovery_time_cnt);
+                int stop = player_ptr[i]->recovery_time_cnt;
+                if (stop)
+                {
+                    stop += 1;
+                }
+                fprintf(fin,"stop %d\n", stop);
                 fprintf(fin,"userloc %d\n",player_ptr[i]->pos);
                 fflush(fin);
             }
