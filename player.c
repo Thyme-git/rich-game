@@ -24,3 +24,8 @@ Player_t* func_init_player(Role_enum role, int id, int init_money)
     player->id = id;
     return player;
 }
+
+int func_count_item_num(Player_t* player_ptr)
+{
+    return player_ptr->barrier_cnt + player_ptr->bomb_cnt + player_ptr->robot_cnt;
+}

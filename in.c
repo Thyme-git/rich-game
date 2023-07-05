@@ -1,23 +1,77 @@
 # include <stdio.h>
 # include "utils.h"
 
+extern const char* get_num_regex;
+extern const char* get_yes_no_regex;
+
 int scanf_num()
 {
-    int sum = 0;
-    char c = getchar();
+    char buf[INPUT_BUFFER_SIZE];
+    int ret = 0;
+    Reg_t* reg_ptr = func_init_reg(get_num_regex);
+    //get_num_regex : "^[ ]*(0|[1-9]+[0-9]*)[ ]*$";
     
-    while(c-'0'>= 0 && c-'0'<= 9)
+    func_scanf_str(buf);
+    ret = func_reg_match(reg_ptr, buf);
+    if (!ret)
     {
-       sum *= 10;
-       sum += (c-'0');
-       c = getchar();
+        if (buf[0] == '\0') // 输入了空指令
+        {
+            return -1;
+        }
+        return 0;
+    }
+    
+    int sum = 0;
+    for (int i = 0; buf[i] != '\0'; ++i)
+    {
+        if (buf[i] == ' ')
+        {
+            continue;
+        }
+        sum *= 10;
+        sum += buf[i]-'0';
     }
 
-    if(c == '\n')
-    return sum;
+    func_free_reg(reg_ptr);
 
-    while( getchar() != '\n');
     return sum;
+}
+
+/**
+ * @brief 
+ * @return 1表示用户选择了y,0表示用户选择了n
+ */
+int func_check_yes_or_no(const char* hint, Role_enum role)
+{
+    char buf[INPUT_BUFFER_SIZE] = {0};
+    int ret = 0;
+    Reg_t* reg_ptr = func_init_reg(get_yes_no_regex);
+
+    do
+    {
+        func_print_hint(role);
+        if (buf[0] == '\0') // 输入了空指令
+        {
+            printf(hint);
+        }else{
+            printf("输入错误，请重新输入！");
+        }
+        printf("(Y/n):");
+        func_scanf_str(buf);
+        ret = func_reg_match(reg_ptr, buf);
+    }while (!ret);
+
+    for (int i = 0; buf[i] != '\0'; ++i)
+    {
+        if (buf[i] == 'Y' || buf[i] == 'y')
+        {
+            return 1;
+        }
+    }
+
+    func_free_reg(reg_ptr);
+    return 0;
 }
 
 void func_scanf_str(char buf[])

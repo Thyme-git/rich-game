@@ -31,8 +31,14 @@ const char* regex[REGEX_NUM] =
 Reg_t* reg_ptr[REGEX_NUM] = {NULL};
 
 // 获取输入角色的表达式（不含去重）
-const char* get_role_regex = "[ ]*[1-4]{2,5}[ ]*$";
+const char* get_role_regex = "^[ ]*[1-4]{2,5}[ ]*$";
 
+// 获取输入>=0的数字
+const char* get_num_regex = "^[ ]*(0|[1-9]+[0-9]*)[ ]*$";
+
+const char* get_yes_no_regex = "^[ ]*[ynYN][ ]*$";
+
+// const char* get_item_regex = ""
 
 Reg_t* func_init_reg(const char* regex)
 {

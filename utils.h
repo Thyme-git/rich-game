@@ -26,6 +26,7 @@
 # define RECOVERY_TIME 3
 # define PRISON_TIME 2
 # define ITEM_NUM 4
+# define MAX_ITEM_NUM 10
 
 # define BARRIER_PRICE 50
 # define ROBOT_PRICE 30
@@ -253,6 +254,7 @@ void func_set_point(Game_t* game_ptr, char name_char, int point);
 // end
 
 int scanf_num();
+int func_check_yes_or_no(const char* hint, Role_enum role);
 void func_scanf_str(char buf[]);
 int sizeof_num(int a);
 char scanf_char();
@@ -260,6 +262,7 @@ char scanf_char();
 void func_init_land(Land_t* land_ptr[]);
 
 Player_t* func_init_player(Role_enum role, int id, int init_money);
+int func_count_item_num(Player_t* player_ptr);
 
 Reg_t* func_init_reg(const char* regex);
 

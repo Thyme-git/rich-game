@@ -40,9 +40,13 @@ void func_init_money(Game_t* game_ptr)
     printf("输入玩家初始资金[%d~%d](默认 %d) 或者输入回车跳过:", MIN_INIT_MONEY, MAX_INIT_MONEY, DEFAULT_INIT_MONEY);
     
     int input_money = scanf_num();
-    if (input_money < MIN_INIT_MONEY || input_money > MAX_INIT_MONEY)
+    if (input_money == -1) // 直接输入了回车
     {
-        printf("输入范围不正确，资金初始化为默认值 %d\n", DEFAULT_INIT_MONEY);
+        printf("资金初始化为默认值 %d\n", DEFAULT_INIT_MONEY);
+    }
+    else if (input_money < MIN_INIT_MONEY || input_money > MAX_INIT_MONEY)
+    {
+        printf("输入范围不正确或错误，资金初始化为默认值 %d\n", DEFAULT_INIT_MONEY);
     }else{
         game_ptr->init_money = input_money;
         printf("资金初始化为 %d\n", input_money);
@@ -63,39 +67,36 @@ int func_game_step(Game_t* game_ptr)
             return 1;
         }
 
-        // 玩家已经输了或还在医院则不执行操作
+        // 玩家已经输了则不执行操作
         if (player_ptr[player_id]->lose){
             continue;
         }
+
+        // 減少財神次數
+        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        {
+            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+        }
+        
+        // 还在医院则不执行操作
         if (player_ptr[player_id]->recovery_time_cnt > 0){
             player_ptr[player_id]->recovery_time_cnt -= 1;
             continue;
         }
-
-        int pos = player_ptr[player_id]->pos;
-        int land_type = land_ptr[pos]->type;
-
-        // 道具屋
-        if (pos == TOOL_POS)
-        {
-            func_pass_tool(game_ptr, player_id);
-        }
-
-        // 禮品屋
-        if (pos == GIFT_POS)
-        {
-            func_pass_gift(game_ptr, player_id);
-        }
-
-        // 魔法屋
-        // ...
 
         // clear
         system("clear");
 
         // 显示地图
         func_display_map(game_ptr, player_id);
-       
+
+        // 读取命令并判断是否有错误、执行
+        get_cmd(game_ptr, player_id);
+
+        // 获取摇骰子后的位置
+        int pos = player_ptr[player_id]->pos;
+        int land_type = land_ptr[pos]->type;
+
         // 提示购买或升级
         if (land_type == VOID_LAND)
         {
@@ -106,12 +107,14 @@ int func_game_step(Game_t* game_ptr)
             func_check_update(land_ptr[pos], player_ptr[player_id]);
         }
 
-        // 读取命令并判断是否有错误、执行
-        get_cmd(game_ptr, player_id);
+        // 道具屋
+        if (pos == TOOL_POS)
+        {
+            func_pass_tool(game_ptr, player_id);
+        }
 
-        // 跟新位置信息
-        pos = player_ptr[player_id]->pos;
-        land_type = land_ptr[pos]->type;
+        // 魔法屋
+        // ...
 
         // 坐牢
         if (pos == PRISON_POS)
@@ -119,11 +122,21 @@ int func_game_step(Game_t* game_ptr)
             func_player_go_prison(game_ptr, player_id);
         }
 
-        // 減少財神次數
-        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        // 禮品屋
+        if (pos == GIFT_POS)
         {
-            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+            func_pass_gift(game_ptr, player_id);
         }
+
+        // 礦山
+        func_get_point(game_ptr, player_id);
+
+        // 收租啦
+        func_pay_toll(game_ptr, player_id);
+
+        // 跟新位置信息
+        pos = player_ptr[player_id]->pos;
+        land_type = land_ptr[pos]->type;
     }
     return 0;
 }
@@ -144,10 +157,12 @@ void get_role_order(Role_enum order[])
         order[i] = ROLE_VOID;
     }
 
-    printf("请选择2~4个角色：1.钱夫人 2.阿土伯 3.孙小美 4.金贝贝，可自由排序");
     while (!done)
     {
+        player_num = 0;
         check_occur = 0;
+
+        printf("请选择2~4个角色：1.钱夫人 2.阿土伯 3.孙小美 4.金贝贝，可自由排序");
         func_scanf_str(str);
         done = func_reg_match(reg_ptr, str);
         if (done)
@@ -175,6 +190,7 @@ void get_role_order(Role_enum order[])
             printf("输入错误，请重新输入\n");
         }
     }
+    func_free_reg(reg_ptr);
 }
 
 void func_free_mem(Game_t* game_ptr)
@@ -227,11 +243,7 @@ int func_check_game_over(Game_t* game_ptr)
 
 void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
 {
-    func_print_hint(player_ptr->role);
-    printf("是否购买该空地？(Y/n)");
-    char input = getchar(); // 命令解析都得重写，判断输入错误
-    while (getchar() != '\n');
-    if (input == 'Y')
+    if (func_check_yes_or_no("是否购买该空地？", player_ptr->role))
     {
         if (player_ptr->money >= land_ptr->base_price)
         {
@@ -247,11 +259,8 @@ void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
 
 void func_check_update(Land_t* land_ptr, Player_t* player_ptr)
 {
-    func_print_hint(player_ptr->role);
-    printf("是否升级该房屋？(Y/n)");
-    char input = getchar(); // 命令解析都得重写，判断输入错误
-    while (getchar() != '\n');
-    if (input == 'Y')
+
+    if (func_check_yes_or_no("是否购买该升级该房产？", player_ptr->role))
     {
         if (player_ptr->money >= land_ptr->base_price)
         {
@@ -288,7 +297,7 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
     if (land_ptr[pos]->item == BOMB)
     {
         player_ptr[player_id]->pos = HOSPITAL_POS;
-        player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
+        player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME+1;
         land_ptr[pos]->item = VOID_ITEM;
         printf("被炸伤啦，送往医院！\n");
         return 1;
@@ -308,7 +317,7 @@ int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
 void func_player_go_prison(Game_t* game_ptr, int player_id)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
-    player_ptr[player_id]->recovery_time_cnt = PRISON_TIME;
+    player_ptr[player_id]->recovery_time_cnt = PRISON_TIME+1; // magic number 🤡
 }
 
 void func_step(Game_t* game_ptr, int player_id, int steps)
@@ -332,12 +341,6 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     {
         player_ptr[player_id]->pos += steps;
     }
-
-    // 收租啦
-    func_pay_toll(game_ptr, player_id);
-
-    // 礦山
-    func_get_point(game_ptr, player_id);
 }
 
 void func_get_point(Game_t* game_ptr, int player_id)
@@ -591,91 +594,99 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
     printf("2.机器娃娃 所需价值点数为%d\n", ROBOT_PRICE);
     printf("3.炸弹 所需价值点数为%d\n", BOMB_PRICE);
     printf("按'F'退出道具屋\n");
-    char c;
-    int sum = player_ptr[player_id]->barrier_cnt+player_ptr[player_id]->bomb_cnt+player_ptr[player_id]->robot_cnt;
-    while(1)
+
+    if (func_count_item_num(player_ptr[player_id]) >= MAX_ITEM_NUM)
     {
-        if(player_ptr[player_id]->point < ROBOT_PRICE)
-        {
-          printf("你的点数不够，已退出道具屋\n");
-          return ;
-        }
-        if(sum >= 10)
-        {
-          printf("你的道具库已经满了,已退出道具屋\n");
-          return ;
-        }
-        c = scanf_char();
-        while( c== ' ')
-        {
-            printf("输入错误，请重新输入\n");
-            c = scanf_char();
-        }
-        if(c=='F'||c=='f')
-        {
-            printf("你成功退出道具屋\n");
-            return ;
-        }
-        else if(c=='1')
-        {
-            if(player_ptr[player_id]->point<50)
-            {
-                printf("你的点数不够，请重新输入\n");
-                c = scanf_char();
-                while(c==' ')
-                {
-                    printf("输入错误，请重新输入\n");
-                    c = scanf_char();
-                }
-                if(c=='F'||c=='f')
-                {
-                    printf("你成功退出道具屋\n");
-                    return ;
-                }
-            }
-            else{
-                player_ptr[player_id]->point-=50;
-                player_ptr[player_id]->barrier_cnt++;
-                sum++;
-                printf("购买路障成功\n继续购买请再次输入\n");
-            }
-        }
-        else if(c=='3')
-        {  
-            if(player_ptr[player_id]->point<50)
-            {
-                printf("你的点数不够，请重新输入\n");
-                printf("你的点数不够，请重新输入\n");
-                c=scanf_char();
-                while(c==' ')
-                {
-                    printf("输入错误，请重新输入\n");
-                    c=scanf_char();
-                }
-                if(c=='F'||c=='f')
-                {
-                    printf("你成功退出道具屋\n");
-                    return ;
-                }
-            }
-            else{
-                player_ptr[player_id]->point-=50;
-                player_ptr[player_id]->bomb_cnt++;
-                sum++;
-                printf("购买炸弹成功\n继续购买请再次输入\n");
-            }
-        }
-        else if(c=='2')
-        {
-            player_ptr[player_id]->point-=30;
-            player_ptr[player_id]->robot_cnt++;
-            sum++;
-            printf("购买机器人娃娃成功\n继续购买请再次输入\n");
-        }
+        printf("背包已经满了（%d/%d），不能再购买道具！\n", MAX_ITEM_NUM, MAX_ITEM_NUM);
+        return;
     }
+
+    
+
+    // char c;
+    // int sum = player_ptr[player_id]->barrier_cnt+player_ptr[player_id]->bomb_cnt+player_ptr[player_id]->robot_cnt;
+    // while(1)
+    // {
+    //     if(player_ptr[player_id]->point < ROBOT_PRICE)
+    //     {
+    //       printf("你的点数不够，已退出道具屋\n");
+    //       return ;
+    //     }
+    //     if(sum >= MAX_ITEM_NUM)
+    //     {
+    //       printf("你的道具库已经满了,已退出道具屋\n");
+    //       return ;
+    //     }
+    //     c = scanf_char();
+    //     while( c== ' ')
+    //     {
+    //         printf("输入错误，请重新输入\n");
+    //         c = scanf_char();
+    //     }
+    //     if(c=='F'||c=='f')
+    //     {
+    //         printf("你成功退出道具屋\n");
+    //         return ;
+    //     }
+    //     else if(c=='1')
+    //     {
+    //         if(player_ptr[player_id]->point<50)
+    //         {
+    //             printf("你的点数不够，请重新输入\n");
+    //             c = scanf_char();
+    //             while(c==' ')
+    //             {
+    //                 printf("输入错误，请重新输入\n");
+    //                 c = scanf_char();
+    //             }
+    //             if(c=='F'||c=='f')
+    //             {
+    //                 printf("你成功退出道具屋\n");
+    //                 return ;
+    //             }
+    //         }
+    //         else{
+    //             player_ptr[player_id]->point-=50;
+    //             player_ptr[player_id]->barrier_cnt++;
+    //             sum++;
+    //             printf("购买路障成功\n继续购买请再次输入\n");
+    //         }
+    //     }
+    //     else if(c=='3')
+    //     {  
+    //         if(player_ptr[player_id]->point<50)
+    //         {
+    //             printf("你的点数不够，请重新输入\n");
+    //             printf("你的点数不够，请重新输入\n");
+    //             c=scanf_char();
+    //             while(c==' ')
+    //             {
+    //                 printf("输入错误，请重新输入\n");
+    //                 c=scanf_char();
+    //             }
+    //             if(c=='F'||c=='f')
+    //             {
+    //                 printf("你成功退出道具屋\n");
+    //                 return ;
+    //             }
+    //         }
+    //         else{
+    //             player_ptr[player_id]->point-=50;
+    //             player_ptr[player_id]->bomb_cnt++;
+    //             sum++;
+    //             printf("购买炸弹成功\n继续购买请再次输入\n");
+    //         }
+    //     }
+    //     else if(c=='2')
+    //     {
+    //         player_ptr[player_id]->point-=30;
+    //         player_ptr[player_id]->robot_cnt++;
+    //         sum++;
+    //         printf("购买机器人娃娃成功\n继续购买请再次输入\n");
+    //     }
+    // }
     return;
 }
-
 
 // 礼品屋没提示输出错误
 void func_pass_gift(Game_t* game_ptr,int player_id)
