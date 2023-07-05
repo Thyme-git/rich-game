@@ -16,6 +16,10 @@ void get_cmd(Game_t* game_ptr, int player_id)
         char str[1024];
         func_scanf_str(str);
         Order_enum index = func_match_order(str);
+        if (func_check_blank_input(str))
+        {
+            continue;
+        }
         if(index == -1)
         {
             printf("你的输入错误  请重新输入指令 按help查看指令\n");

@@ -171,6 +171,7 @@ void get_cmd(Game_t* game_ptr, int player_id);
 void func_print_hint(Role_enum role);
 void func_display_map(Game_t* game_ptr, int player_id);
 void func_print_with_color(Color_enum color, char chr);
+void func_update_map_info(Game_t* game_ptr, int player_id);
 
 /**
  * @brief
@@ -263,6 +264,10 @@ void func_set_pos(Game_t* game_ptr, char name_char,int pos_num);
 void func_set_point(Game_t* game_ptr, char name_char, int point);
 
 void func_dump(Game_t *game_ptr,int player_id, FILE *fin);
+
+int func_check_is_player(char c);
+
+// int func_player_id_to_symbol
 // end
 
 int scanf_num();

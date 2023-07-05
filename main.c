@@ -13,6 +13,12 @@ int main(int argc, char** argv)
             printf("打开文件%s失败！\n", argv[1]);
             exit(-1);
         }
+    }else{
+        dump_fp = fopen("dump.out", "w");
+        if (dump_fp == NULL){
+            printf("打开文件dump.out失败！\n");
+            exit(-1);
+        }
     }
 
     // 初始化正则表达式
