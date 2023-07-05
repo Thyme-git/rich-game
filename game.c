@@ -39,6 +39,7 @@ void func_init_money(Game_t* game_ptr)
     game_ptr->init_money = DEFAULT_INIT_MONEY;
     printf("输入玩家初始资金[%d~%d](默认 %d) 或者输入回车跳过:", MIN_INIT_MONEY, MAX_INIT_MONEY, DEFAULT_INIT_MONEY);
     
+HERE:
     int input_money = scanf_num();
     if (input_money == -1) // 直接输入了回车
     {
@@ -46,7 +47,8 @@ void func_init_money(Game_t* game_ptr)
     }
     else if (input_money < MIN_INIT_MONEY || input_money > MAX_INIT_MONEY)
     {
-        printf("输入范围不正确或错误，资金初始化为默认值 %d\n", DEFAULT_INIT_MONEY);
+        printf("输入范围不正确或错误，请重新输入:");
+        goto HERE;
     }else{
         game_ptr->init_money = input_money;
         printf("资金初始化为 %d\n", input_money);
