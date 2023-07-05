@@ -37,7 +37,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
                 fprintf(fin,"item3 %d\n",player_ptr[i]->bomb_cnt);
                 fprintf(fin,"buff %d\n",player_ptr[i]->free_of_toll_cnt);
                 fprintf(fin,"stop %d\n",player_ptr[i]->recovery_time_cnt);
-                fprintf(fin,"user_loc %d\n",player_ptr[i]->pos);
+                fprintf(fin,"userloc %d\n",player_ptr[i]->pos);
                 fflush(fin);
             }
         }
@@ -52,7 +52,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
             fprintf(fin,"item3 %d\n",0);
             fprintf(fin,"buff %d\n",0);
             fprintf(fin,"stop %d\n",0);
-            fprintf(fin,"user_loc %d\n",0);
+            fprintf(fin,"userloc %d\n",0);
             fflush(fin); 
         }
     }
