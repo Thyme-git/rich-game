@@ -167,11 +167,13 @@ void func_game_over(Game_t* game_ptr)
     }
     printf("玩家%d获胜啦！\n", winner_id);
 
+    extern FILE* dump_fp;
+
+    // dump info
+    func_dump(game_ptr, winner_id, dump_fp);
+
     // 释放内存
     func_free_mem(game_ptr);
-
-    // exit
-    exit(0);
 }
 
 int func_check_game_over(Game_t* game_ptr)
