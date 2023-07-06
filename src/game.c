@@ -104,7 +104,7 @@ int func_game_step(Game_t* game_ptr)
         {
             func_check_buy(land_ptr[pos], player_ptr[player_id]);   
         }
-        if ((land_type == HUT || land_type == HOUSE) && land_ptr[pos]->owner_id == player_id)
+        if ((land_type == VOID_LAND || land_type == HUT || land_type == HOUSE) && land_ptr[pos]->owner_id == player_id)
         {
             func_check_update(land_ptr[pos], player_ptr[player_id]);
         }
