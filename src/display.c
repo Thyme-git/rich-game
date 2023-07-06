@@ -79,8 +79,9 @@ void func_display_map(Game_t* game_ptr, int player_id)
     putchar('\n');
 
     // 打印中间部分
-    for (int i = TOOL_POS+1; i < GIFT_POS; ++i)
-    {    
+    for (int i = 1; i < GIFT_POS-TOOL_POS; ++i)
+    {   
+        // TODO 矿山人物显示
         printf("$"SPACE_STR);
         char symbol = land_ptr[i]->symbol;
         Color_enum color = land_ptr[i]->color;

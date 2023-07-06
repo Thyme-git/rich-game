@@ -207,7 +207,7 @@ void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
 void func_check_update(Land_t* land_ptr, Player_t* player_ptr)
 {
 
-    if (func_check_yes_or_no("是否购买该升级该房产？", player_ptr->role))
+    if (func_check_yes_or_no("是否升级该房产？", player_ptr->role))
     {
         if (player_ptr->money >= land_ptr->base_price)
         {
