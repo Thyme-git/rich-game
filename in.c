@@ -224,7 +224,7 @@ void func_scanf_str(char buf[])
 {
     char c;
     int i = 0;
-    while((c = getchar())!='\n' && c != EOF)
+    while((c = getchar()) != '\n' && c != EOF)
     {
         buf[i]=c;
         i++;

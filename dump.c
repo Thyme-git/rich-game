@@ -61,7 +61,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
             fflush(fin); 
         }
     }
-    fprintf(fin, "MAP\n");
+    fprintf(fin, "MAP");
     // TODO
     /*
     记录用户顺序;
@@ -72,7 +72,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
         {
             char buf[ROLE_NUM];
             func_get_pri_order(land_ptr[i]->privilige_role, buf);
-            fprintf(fin, "mapuser %d %s\n", i, buf);
+            fprintf(fin, "\nmapuser %d %s", i, buf);
             // putchar('\n');
         }
     }
@@ -81,7 +81,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     {
         if(land_ptr[land_pos]->owner_id!=-1)
         {
-            fprintf(fin,"map %d %c %d\n",land_pos,role_symbol[land_ptr[land_pos]->owner_id],land_ptr[land_pos]->type);
+            fprintf(fin,"\nmap %d %c %d",land_pos,role_symbol[land_ptr[land_pos]->owner_id],land_ptr[land_pos]->type);
             fflush(fin);
         }
     }
@@ -89,7 +89,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     {
         if(land_ptr[land_pos]->item!=VOID_ITEM)
         {
-            fprintf(fin,"item %d %d",land_pos,land_ptr[land_pos]->item);
+            fprintf(fin,"\nitem %d %d",land_pos,land_ptr[land_pos]->item);
             fflush(fin);
         }
     }
