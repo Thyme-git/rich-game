@@ -1,0 +1,9 @@
+1500
+12
+set stop A 4
+step 1
+n
+step 1
+n
+dump
+quit

@@ -1,0 +1,9 @@
+1500
+12
+set map 2 A 2
+set bomb 2
+step 2
+step 3
+n
+dump
+quit
