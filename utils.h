@@ -286,8 +286,6 @@ int func_check_blank_input(char buf[]);
 Item_enum func_get_item(Role_enum role);
 int func_get_gift(Role_enum role);
 void func_scanf_str(char buf[]);
-int sizeof_num(int a);
-char scanf_char();
 
 void func_init_land(Land_t* land_ptr[]);
 
