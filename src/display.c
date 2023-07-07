@@ -81,10 +81,11 @@ void func_display_map(Game_t* game_ptr, int player_id)
     // 打印中间部分
     for (int i = 1; i < GIFT_POS-TOOL_POS; ++i)
     {   
-        // TODO 矿山人物显示
-        printf("$"SPACE_STR);
-        char symbol = land_ptr[i]->symbol;
-        Color_enum color = land_ptr[i]->color;
+        char symbol = land_ptr[MAGIC_POS+7-i]->symbol;
+        putchar(symbol);
+        printf(SPACE_STR);
+        symbol = land_ptr[i+TOOL_POS]->symbol;
+        Color_enum color = land_ptr[i+TOOL_POS]->color;
         func_print_with_color(color, symbol);
         putchar('\n');
     }
