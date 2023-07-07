@@ -65,5 +65,5 @@ class TestProgram:
         print('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m')
 
 if __name__ == '__main__':
-    tester = TestProgram('./main', 'test', 'dump')#改test为你的文件夹名称，会自动遍历里面的小文件夹
+    tester = TestProgram('./main', 'test1', 'dump')#改test为你的文件夹名称，会自动遍历里面的小文件夹
     tester.run_all_tests()
