@@ -210,6 +210,8 @@ void func_check_buy(Land_t* land_ptr, Player_t* player_ptr);
 
 void func_check_update(Land_t* land_ptr, Player_t* player_ptr);
 
+void func_check_buy_update(Game_t* game_ptr, int player_id);
+
 int func_roll(Game_t* game_ptr, int player_id);
 
 void func_player_go_prison(Game_t* game_ptr, int player_id);

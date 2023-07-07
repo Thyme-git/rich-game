@@ -100,14 +100,7 @@ int func_game_step(Game_t* game_ptr)
         int land_type = land_ptr[pos]->type;
 
         // 提示购买或升级
-        if (land_type == VOID_LAND && land_ptr[pos]->owner_id == -1)
-        {
-            func_check_buy(land_ptr[pos], player_ptr[player_id]);   
-        }
-        if ((land_type == VOID_LAND || land_type == HUT || land_type == HOUSE) && land_ptr[pos]->owner_id == player_id)
-        {
-            func_check_update(land_ptr[pos], player_ptr[player_id]);
-        }
+        func_check_buy_update(game_ptr, player_id);
 
         // 道具屋
         if (pos == TOOL_POS)
@@ -221,6 +214,28 @@ void func_check_update(Land_t* land_ptr, Player_t* player_ptr)
             printf("资金不足无法升级！\n");
         }
     }
+}
+
+void func_check_buy_update(Game_t* game_ptr, int player_id)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+
+    int pos = player_ptr[player_id]->pos;
+    int land_type = land_ptr[pos]->type;
+
+    // 提示购买或升级
+    if (land_type == VOID_LAND && land_ptr[pos]->owner_id == -1)
+    {
+        func_check_buy(land_ptr[pos], player_ptr[player_id]);
+        return;  
+    }
+    if ((land_type == VOID_LAND || land_type == HUT || land_type == HOUSE) && land_ptr[pos]->owner_id == player_id)
+    {
+        func_check_update(land_ptr[pos], player_ptr[player_id]);
+        return;
+    }
+
 }
 
 int func_roll(Game_t* game_ptr, int player_id)
