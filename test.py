@@ -3,6 +3,7 @@ import glob
 import filecmp
 import subprocess
 import itertools
+import time
 
 class TestProgram:
     def __init__(self, program_path, test_folder, dump_path):
@@ -17,13 +18,17 @@ class TestProgram:
         return glob.glob(f'{self.test_folder}/*')
 
     def run_test(self, test_case_folder):
-        # 创建一个子进程来运行游戏
+        # 创建一个子进程来运行游戏程序
         with open(f'{test_case_folder}/input', 'r') as input_file:
-            process = subprocess.Popen([f"{self.program_path}","dump"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
-            for line in input_file:
-                process.stdin.write(line)
-                process.stdin.flush()
-        process.communicate()
+            process = subprocess.Popen([f"{self.program_path}","dump"], stdin=input_file, stdout=subprocess.DEVNULL, universal_newlines=True)
+        time.sleep(0.01)
+
+        #强制结束子进程
+        process.terminate()
+
+        #检查进程是否已经结束，如果没有，等待它结束
+        if process.poll() is None:
+            process.communicate()
 
         # 重命名和移动dump
         os.rename(f'{self.dump_path}', f'{test_case_folder}/dump')
@@ -60,5 +65,5 @@ class TestProgram:
         print('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m')
 
 if __name__ == '__main__':
-    tester = TestProgram('rich-game/main', 'test1', 'dump')#改test为你的文件夹名称，会自动遍历里面的小文件夹
+    tester = TestProgram('./main', 'test', 'dump')#改test为你的文件夹名称，会自动遍历里面的小文件夹
     tester.run_all_tests()

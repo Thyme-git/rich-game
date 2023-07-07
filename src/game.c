@@ -73,16 +73,17 @@ int func_game_step(Game_t* game_ptr)
         if (player_ptr[player_id]->lose){
             continue;
         }
-
-        // 減少財神次數
-        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
-        {
-            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
-        }
         
         // 还在医院则不执行操作
         if (player_ptr[player_id]->recovery_time_cnt > 0){
             player_ptr[player_id]->recovery_time_cnt -= 1;
+            
+            // 減少財神次數
+            if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+            {
+                game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+            }
+            
             continue;
         }
 
@@ -111,10 +112,17 @@ int func_game_step(Game_t* game_ptr)
         // 魔法屋
         // ...
 
+
         // 坐牢
         if (pos == PRISON_POS)
         {
             func_player_go_prison(game_ptr, player_id);
+        }
+
+        // 減少財神次數
+        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        {
+            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
         }
 
         // 禮品屋
@@ -622,7 +630,7 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
         break;
     case 3:
         printf("获得财神祝福%d回合!\n", GIFT_BLESS);
-        player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS+1;
+        player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
         break;
     default:
         break;
