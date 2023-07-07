@@ -212,11 +212,13 @@ void func_check_update(Land_t* land_ptr, Player_t* player_ptr);
 
 int func_roll(Game_t* game_ptr, int player_id);
 
-int func_player_suffer(Game_t* game_ptr, int player_id, int pos);
-
 void func_player_go_prison(Game_t* game_ptr, int player_id);
 
 void func_step(Game_t* game_ptr, int player_id, int steps);
+
+void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos);
+
+void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos);
 
 void func_sell(Game_t* game_ptr, int player_id, int sell_pos);
 

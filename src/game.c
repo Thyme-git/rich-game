@@ -230,37 +230,35 @@ int func_roll(Game_t* game_ptr, int player_id)
 }
 
 /**
- * @brief 
- * player_id 在 pos 处遇到了 bomb | barrier，该函数会改变玩家的位置（受到炸弹攻击）
+ * @brief 清除路上的路障并将玩家移动到路障处
  * @param game_ptr 
- * @param player_id 
  * @param pos 
- * @return 1 表示玩家受道具攻击, 0表示正常
  */
-int func_player_suffer(Game_t* game_ptr, int player_id, int pos)
+void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
 
-    // 被炸伤了
-    if (land_ptr[pos]->item == BOMB)
-    {
-        // player_ptr[player_id]->pos = HOSPITAL_POS;
-        func_change_pos(game_ptr, player_id, HOSPITAL_POS);
-        player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
-        land_ptr[pos]->item = VOID_ITEM;
-        printf("被炸伤啦，送往医院！\n");
-        return 1;
-    }
+    func_change_pos(game_ptr, player_id, pos);
+    land_ptr[pos]->item = VOID_ITEM;
+    printf("此路不通！\n");
+}
 
-    // 经过路障
-    if (land_ptr[pos]->item == BARRIER)
-    {
-        land_ptr[pos]->item = VOID_ITEM;
-        printf("此路不通！\n");
-        return 1;
-    }
-    return 0;
+/**
+ * @brief 将玩家的位置移动到医院并设置恢复时间,同时清除路上炸弹
+ * @param game_ptr 
+ * @param player_id 
+ * @param pos 
+ */
+void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos)
+{
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+    
+    func_change_pos(game_ptr, player_id, HOSPITAL_POS);
+    player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
+    land_ptr[pos]->item = VOID_ITEM;
+    printf("被炸伤啦，送往医院！\n");
 }
 
 void func_player_go_prison(Game_t* game_ptr, int player_id)
@@ -273,16 +271,27 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
+
+    int start_pos = (player_ptr[player_id]->pos + 1) % LAND_NUM;
     
     for (int i = 0; i < steps; ++i)
     {
-        // player_ptr[player_id]->pos += 1;
-        func_change_pos(game_ptr, player_id, player_ptr[player_id]->pos+1);
-        // 经过炸弹或路障
-        if (func_player_suffer(game_ptr, player_id, player_ptr[player_id]->pos)){
-            break;
+        // 遇到炸弹
+        if (land_ptr[(i+start_pos) % LAND_NUM]->item == BOMB)
+        {
+            func_suffer_bomb(game_ptr, player_id, (i+start_pos) % LAND_NUM);
+            return;
+        }
+
+        // 遇到路障
+        if (land_ptr[(i+start_pos) % LAND_NUM]->item == BARRIER)
+        {
+            func_suffer_barrier(game_ptr, player_id, (i+start_pos) % LAND_NUM);
+            return;
         }
     }
+
+    func_change_pos(game_ptr, player_id, (player_ptr[player_id]->pos+steps) % LAND_NUM);
 }
 
 void func_get_point(Game_t* game_ptr, int player_id)
@@ -452,14 +461,6 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
 
     player_ptr[player_id]->bomb_cnt -= 1;
     land_ptr[target_pos]->item = BOMB;
-
-    // 刚好炸到人
-    for (int i = 0; i < game_ptr->player_num; ++i)
-    {
-        if (player_ptr[player_id]->pos == pos+bomb_pos){
-            func_player_suffer(game_ptr, i, pos+bomb_pos);
-        }
-    }
 }
 
 void func_robot(Game_t* game_ptr,int player_id)
@@ -581,7 +582,7 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
     return;
 }
 
-// 礼品屋没提示输出错误
+
 void func_pass_gift(Game_t* game_ptr,int player_id)
 {  
     Land_t** land_ptr = game_ptr->land_ptr;
