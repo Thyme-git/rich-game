@@ -502,6 +502,8 @@ void func_robot(Game_t* game_ptr,int player_id)
     {
         land_ptr[(pos+i) % LAND_NUM]->item=VOID_ITEM;
     }
+
+    player_ptr[player_id]->robot_cnt -= 1;    
     return ;
 }
 
