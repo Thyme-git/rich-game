@@ -574,29 +574,29 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
         }else if (func_count_item_num(player_ptr[player_id]) >= MAX_ITEM_NUM){
             printf("背包已经满了（%d/%d），不能再购买道具！\n", MAX_ITEM_NUM, MAX_ITEM_NUM);
         }else if (choice == BARRIER){
-            if (player_ptr[player_id]->money < BARRIER_PRICE)
+            if (player_ptr[player_id]->point < BARRIER_PRICE)
             {
                 printf("你的点数不足，请重新选择！\n");
             }else{
-                player_ptr[player_id]->money -= BARRIER_PRICE;
+                player_ptr[player_id]->point -= BARRIER_PRICE;
                 player_ptr[player_id]->barrier_cnt += 1;
                 printf("购买成功！\n");
             }
         }else if (choice == ROBOT){
-            if (player_ptr[player_id]->money < ROBOT_PRICE)
+            if (player_ptr[player_id]->point < ROBOT_PRICE)
             {
                 printf("你的点数不足，请重新选择！\n");
             }else{
-                player_ptr[player_id]->money -= ROBOT_PRICE;
+                player_ptr[player_id]->point -= ROBOT_PRICE;
                 player_ptr[player_id]->robot_cnt += 1;
                 printf("购买成功！\n");
             }
         }else if (choice == BOMB){
-            if (player_ptr[player_id]->money < BOMB_PRICE)
+            if (player_ptr[player_id]->point < BOMB_PRICE)
             {
                 printf("你的点数不足，请重新选择！\n");
             }else{
-                player_ptr[player_id]->money -= BOMB_PRICE;
+                player_ptr[player_id]->point -= BOMB_PRICE;
                 player_ptr[player_id]->bomb_cnt += 1;
                 printf("购买成功！\n");
             }
