@@ -118,12 +118,6 @@ int func_game_step(Game_t* game_ptr)
             func_player_go_prison(game_ptr, player_id);
         }
 
-        // 減少財神次數
-        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
-        {
-            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
-        }
-
         // 禮品屋
         if (pos == GIFT_POS)
         {
@@ -135,6 +129,12 @@ int func_game_step(Game_t* game_ptr)
 
         // 收租啦
         func_pay_toll(game_ptr, player_id);
+
+        // 減少財神次數
+        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        {
+            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+        }
     }
     return 0;
 }
