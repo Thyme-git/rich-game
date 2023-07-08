@@ -106,7 +106,11 @@ void func_display_map(Game_t* game_ptr, int player_id)
 void func_display_with_info(Game_t* game_ptr, int player_id, char* info)
 {
     // clear
+    #ifdef __linux__
     system("clear");
+    #else
+    system("cls");
+    #endif
 
     if (info != NULL){
         printf("[%s]\n", info);
