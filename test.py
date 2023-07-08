@@ -19,6 +19,7 @@ class TestProgram:
         return glob.glob(f'{self.test_folder}/*')
 
     def run_test(self, test_case_folder):
+        
         # 创建一个子进程来运行游戏程序
         with open(f'{test_case_folder}/input', 'r') as input_file:
             process = subprocess.Popen([f"{self.program_path}","dump"], stdin=input_file, stdout=subprocess.DEVNULL, universal_newlines=True)
@@ -81,7 +82,9 @@ class TestProgram:
         # 运行所有测试用例
         for test_case_folder in self.get_test_cases():
             self.run_test(test_case_folder)
-            sys.stdout.write('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m' + '\r')
+            #即时显示
+            total_tests = len(self.get_test_cases())
+            sys.stdout.write('\033[32m' + f'Passed tests: ({self.passed_tests}/{total_tests})' + '\033[0m' + '\r')
             sys.stdout.flush()
 
         # Print the final result
