@@ -1,0 +1,13 @@
+10000
+12
+set pos Q 35
+set buff Q 5
+set point A 567
+step 1
+n
+step 2
+n
+step 2
+n
+dump
+quit

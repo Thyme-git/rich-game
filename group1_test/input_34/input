@@ -1,0 +1,12 @@
+10000
+12
+set pos Q 0
+set pos A 0
+set item Q 2 2
+set item A 1 10
+step 3
+n
+step 7
+n
+dump
+quit

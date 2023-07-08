@@ -1,0 +1,11 @@
+10000
+12
+set pos Q 0
+set pos A 0
+set money Q 1000
+step 3
+n
+step 7
+n
+dump
+quit

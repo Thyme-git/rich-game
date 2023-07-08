@@ -1,0 +1,12 @@
+2000
+12
+set barrier 3
+step 5
+Y
+step 5
+Y
+sell 3
+step 3
+n
+dump
+quit

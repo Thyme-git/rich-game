@@ -1,0 +1,20 @@
+10000
+12
+step 3
+n
+step 2
+n
+set pos A 28
+set bomb 58
+set pos S 58
+set item A 1 1
+set item A 2 10
+set item S 3 1
+set item S 1 10
+set point S 1223
+set point A 67
+set money S 34449
+set map 18 A 3
+set map 45 S 2
+dump
+quit
