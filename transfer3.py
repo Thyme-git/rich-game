@@ -10,6 +10,7 @@ class Test:
         self._DoneFunc = DoneFunc
 
     def __read_cases_files(self, _path:str):
+        # 递归读取所有的测试用例文件
         for file in os.listdir(_path):
             file_path = os.path.join(_path, file)
             if os.path.isdir(file_path):
@@ -41,7 +42,7 @@ class Test:
 
                 if '_r' in file_name:
                     continue
-
+                # 查找编号相同的输入输出对
                 f_dict["path"] = file_name.replace("TestCase", "") + "_r.out"
                 try:
                     with open(file_name + '.in', 'r') as in_file:
@@ -56,10 +57,10 @@ class Test:
 
             self._testNum = len(self._tests)
             return True, self._testNum
-
+    # 保存为指定格式
     def save_test_case(self, output_dir):
         for test_case in self._tests:
-
+            # 组合原路径为新的文件夹名
             parts = test_case["path"].lstrip('/').split('/')
             file_name, _ = os.path.splitext(parts[-1])
             parts[-1] = file_name
