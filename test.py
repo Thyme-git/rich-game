@@ -33,7 +33,7 @@ class TestProgram:
         # 删除原来的dump
         if os.path.exists(f'{test_case_folder}/dump'):
             os.remove(f'{test_case_folder}/dump')
-        time.sleep(0.05)
+        time.sleep(0.5)
         # 重命名和移动dump
         os.rename(f'{self.dump_path}', f'{test_case_folder}/dump')
         # 清除文件末尾的空行
