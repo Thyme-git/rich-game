@@ -1,0 +1,11 @@
+1000
+1234
+set item Q 1 1
+set pos Q 1
+set pos A 2
+block 1
+step 2
+n
+dump
+quit
+//玩家设置在有玩家区域无效

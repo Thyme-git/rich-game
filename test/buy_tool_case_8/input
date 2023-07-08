@@ -1,0 +1,12 @@
+10000
+1234
+set point Q 200
+step 28
+1
+2
+5
+3
+F
+dump
+quit
+//

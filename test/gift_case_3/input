@@ -1,0 +1,8 @@
+20000
+1234
+set buff Q 1
+step 35
+3
+dump
+quit
+//double buff
