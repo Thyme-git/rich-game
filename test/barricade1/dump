@@ -4,9 +4,9 @@ Q
 alive 1
 money 1500
 point 0
-item1 0
+item1 3
 item2 0
-item3 1
+item3 0
 buff 0
 stop 0
 userloc 3
@@ -18,8 +18,8 @@ item1 0
 item2 0
 item3 0
 buff 0
-stop 3
-userloc 14
+stop 0
+userloc 9
 S
 alive 0
 money 0
@@ -42,5 +42,4 @@ stop 0
 userloc 0
 MAP
 mapuser 3 Q
-mapuser 14 A
-item 5 3
+mapuser 9 A

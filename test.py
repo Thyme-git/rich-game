@@ -65,7 +65,7 @@ class TestProgram:
                 actual_content = actual_file.read()
 
                 if not actual_content.strip():  # if dump file is empty
-                    print("\tDump is empty")
+                    print("     Dump is empty")
 
                 else:
                     actual_file.seek(0)  # reset pointer
