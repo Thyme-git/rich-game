@@ -60,7 +60,7 @@ int func_game_step(Game_t* game_ptr)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
     Land_t** land_ptr = game_ptr->land_ptr;
-    
+
     for (int player_id = 0; player_id < game_ptr->player_num; ++player_id)
     {  
         // 判断game over

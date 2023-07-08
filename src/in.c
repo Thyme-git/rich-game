@@ -242,6 +242,12 @@ int func_scanf_str(char buf[])
         if (!valid)
         {
             while ((c = getchar()) != '\n' && c != EOF);
+            
+            // 这是一坨答辩
+            buf[0] = '#';
+            buf[1] = '#';
+            buf[2] = '#';
+            buf[3] = '#';
             return 0;
         }
 
