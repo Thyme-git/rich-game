@@ -110,7 +110,7 @@ int func_check_yes_or_no(const char* hint, Role_enum role)
         func_print_hint(role);
         if (func_check_blank_input(buf)) // 输入了空指令
         {
-            printf(hint);
+            printf("%s", hint);
         }else{
             printf("输入错误，请重新输入！");
         }

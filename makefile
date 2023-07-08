@@ -2,14 +2,14 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Linux)
 main:
-	gcc src/*.c -o main
+	gcc src/*.c -o rich
 
 clean:
-	rm main
+	rm rich
 else
 main.exe:
-	mingw64/bin/gcc src/*c -o main -I src/regex/include/ -L src/regex/lib/ -l regex -static -m32
+	mingw64/bin/gcc src/*c -o rich.exe -I src/regex/include/ -L src/regex/lib/ -l regex -static -m32
 
 clean:
-	rm main
+	rm rich.exe
 endif
