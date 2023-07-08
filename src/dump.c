@@ -95,7 +95,7 @@ int func_check_someone_here(Game_t* game_ptr, int pos)
 {
     for (int i = 0; i < game_ptr->player_num; ++i)
     {
-        if (game_ptr->players_ptr[i]->pos == pos)
+        if (game_ptr->players_ptr[i]->pos == pos && game_ptr->players_ptr[i]->lose == 0)
         {
             return 1;
         }
