@@ -1,0 +1,17 @@
+10000
+12
+set item Q 2 3
+set bomb 12
+set barrier 13
+set barrier 34
+step 10
+n
+step 9
+n
+robot
+step 5
+n
+step 1
+n
+dump
+quit

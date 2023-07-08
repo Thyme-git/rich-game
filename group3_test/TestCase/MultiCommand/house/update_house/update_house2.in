@@ -1,0 +1,9 @@
+5000
+214
+set map 5 Q 2
+step 5
+step 5
+y
+step 5
+dump
+quit

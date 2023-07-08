@@ -1,0 +1,6 @@
+10000
+123
+set map 5 A 2
+set map 6 A 3
+dump
+quit

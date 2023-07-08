@@ -1,0 +1,18 @@
+13456
+13
+set item S 3 5
+step 4
+n
+step 1
+n
+step 3
+n
+bomb 6
+bomb 7
+bomb 8
+bomb 12
+step 1
+n
+step 5
+dump
+quit

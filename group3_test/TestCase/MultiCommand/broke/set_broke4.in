@@ -1,0 +1,14 @@
+10000
+123
+set money Q 400
+set money A 300
+set map 1 A 3
+set map 2 Q 3
+set map 3 S 3
+step 1
+step 2
+step 3
+step 2
+step 1
+dump
+quit

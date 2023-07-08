@@ -1,0 +1,14 @@
+12345
+34
+set item S 2 3
+set barrier 3
+set barrier 4
+set bomb 15
+step 8
+n
+step 1
+n
+robot
+step 20
+dump
+quit

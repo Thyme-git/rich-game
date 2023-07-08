@@ -1,0 +1,8 @@
+10000
+123
+set buff Q 2
+set money Q 50
+set map 5 A 3
+step 5
+dump
+quit

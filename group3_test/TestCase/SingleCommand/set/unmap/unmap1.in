@@ -1,0 +1,6 @@
+5000
+23
+set map 2 A 3
+set unmap 2
+dump
+quit 

@@ -1,0 +1,10 @@
+10000
+123
+set bomb 1
+set map 2 Q 3
+set map 3 Q 3
+step 1
+step 2
+step 3
+dump
+quit

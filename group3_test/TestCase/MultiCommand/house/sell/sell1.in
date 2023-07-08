@@ -1,0 +1,11 @@
+5000
+21
+set map 5 Q 2
+step 5
+sell 5
+set map 9 A 1
+step 1
+y
+sell 9
+dump
+quit

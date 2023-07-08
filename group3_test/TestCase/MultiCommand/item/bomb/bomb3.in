@@ -1,0 +1,13 @@
+23678
+12
+set item Q 3 5
+set item A 3 5
+step 9
+y
+step 8
+n
+bomb 1
+step 1
+step 1
+dump
+quit
