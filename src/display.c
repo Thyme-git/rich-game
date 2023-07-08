@@ -112,6 +112,11 @@ void func_display_with_info(Game_t* game_ptr, int player_id, char* info)
     system("cls");
     #endif
 
+    Player_t* player_ptr = game_ptr->players_ptr[player_id];
+
+    // 显示角色状态栏
+    printf("[%c：位置%d|金钱%d|点数%d|路障%d|炸弹%d|机器娃娃%d|财神祝福%d|空地%d|茅屋%d|房子%d|摩天楼%d]\n", role_symbol[player_ptr->role], player_ptr->pos, player_ptr->money, player_ptr->point, player_ptr->barrier_cnt, player_ptr->bomb_cnt, player_ptr->robot_cnt, player_ptr->free_of_toll_cnt, player_ptr->solid_property_cnt[VOID_LAND], player_ptr->solid_property_cnt[HUT], player_ptr->solid_property_cnt[HOUSE], player_ptr->solid_property_cnt[SKYCRAPER]);
+
     if (info != NULL){
         printf("[%s]\n", info);
     }else{

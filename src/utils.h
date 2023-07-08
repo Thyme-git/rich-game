@@ -119,6 +119,9 @@ typedef struct _Player
     int free_of_toll_cnt; // 玩家拥有面过路费的次数，当获得财神礼品时刷新为5或加5？
     int recovery_time_cnt; // 玩家被炸伤后剩余的恢复天数，被炸伤后变为3;
     int lose; // 1表示破产输了，0表示沒輸
+    
+    // 房屋数量
+    int solid_property_cnt[4];
 }Player_t;
 
 typedef struct _Game

@@ -200,6 +200,7 @@ void func_check_buy(Game_t* game_ptr, int player_id, int pos)
         if (player_ptr[player_id]->money >= land_ptr[pos]->base_price)
         {
             player_ptr[player_id]->money -= land_ptr[pos]->base_price;
+            player_ptr[player_id]->solid_property_cnt[VOID_LAND] += 1;
             land_ptr[pos]->price += land_ptr[pos]->base_price;
             land_ptr[pos]->owner_id = player_ptr[player_id]->id;
             sprintf(info_buf, "购买成功！");
@@ -220,6 +221,8 @@ void func_check_update(Game_t* game_ptr, int player_id, int pos)
         {
             player_ptr[player_id]->money -= land_ptr[pos]->base_price;
             land_ptr[pos]->price += land_ptr[pos]->base_price;
+            player_ptr[player_id]->solid_property_cnt[land_ptr[pos]->type] -= 1;
+            player_ptr[player_id]->solid_property_cnt[land_ptr[pos]->type+1] += 1;
             land_ptr[pos]->type += 1;
             sprintf(info_buf, "升级成功！");
         }else{
@@ -390,6 +393,7 @@ void func_sell(Game_t* game_ptr, int player_id, int sell_pos)
 
     player_ptr[player_id]->money += 2*land_ptr[sell_pos]->price;
     land_ptr[sell_pos]->price = 0;
+    player_ptr[player_id]->solid_property_cnt[land_ptr[sell_pos]->type] -= 1;
     land_ptr[sell_pos]->type = VOID_LAND;
     land_ptr[sell_pos]->owner_id = -1;
 
@@ -530,6 +534,10 @@ void func_query(Game_t* game_ptr,int player_id)
     printf("路障:%d\n", player_ptr[player_id]->barrier_cnt);
     printf("炸弹:%d\n", player_ptr[player_id]->bomb_cnt);
     printf("机器娃娃:%d\n", player_ptr[player_id]->robot_cnt);
+    printf("空地:%d\n", player_ptr[player_id]->solid_property_cnt[VOID_LAND]);
+    printf("茅屋:%d\n", player_ptr[player_id]->solid_property_cnt[HUT]);
+    printf("房子:%d\n", player_ptr[player_id]->solid_property_cnt[HOUSE]);
+    printf("摩天楼:%d\n", player_ptr[player_id]->solid_property_cnt[SKYCRAPER]);
     // printf("\n");
 }
 
@@ -719,6 +727,7 @@ void func_set_barrier(Game_t* game_ptr, int barrier_pos)
 void func_set_unmap(Game_t* game_ptr, int unmap_pos)
 {
     Land_t** land_ptr = game_ptr->land_ptr;
+    game_ptr->players_ptr[land_ptr[unmap_pos]->owner_id]->solid_property_cnt[land_ptr[unmap_pos]->type] -= 1;
     land_ptr[unmap_pos]->owner_id = -1;
     land_ptr[unmap_pos]->type = VOID_LAND;
     return ;
@@ -755,6 +764,7 @@ void func_set_map(Game_t* game_ptr, const char name_char, int map_pos, int level
         {
             land_ptr[map_pos]->owner_id = player_id;
             land_ptr[map_pos]->type = level;
+            player_ptr[player_id]->solid_property_cnt[level] += 1;
             land_ptr[map_pos]->price = land_ptr[map_pos]->base_price * (level+1);
             return;
         }

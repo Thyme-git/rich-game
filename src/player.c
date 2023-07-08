@@ -22,6 +22,10 @@ Player_t* func_init_player(Role_enum role, int id, int init_money)
     player->robot_cnt = 0;
     player->free_of_toll_cnt = 0;
     player->id = id;
+    player->solid_property_cnt[VOID_LAND] = 0;
+    player->solid_property_cnt[HUT] = 0;
+    player->solid_property_cnt[HOUSE] = 0;
+    player->solid_property_cnt[SKYCRAPER] = 0;
     return player;
 }
 

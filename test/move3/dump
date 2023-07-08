@@ -19,7 +19,7 @@ item2 0
 item3 0
 buff 0
 stop 0
-userloc 1
+userloc 0
 S
 alive 0
 money 0
@@ -41,4 +41,5 @@ buff 0
 stop 0
 userloc 0
 MAP
-mapuser 1 AQ
+mapuser 0 A
+mapuser 1 Q
