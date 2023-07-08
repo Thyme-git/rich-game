@@ -1,0 +1,21 @@
+1500
+1234
+set map 30 Q 0
+set map 31 Q 1
+set map 32 A 1
+set map 33 S 2
+set map 34 J 3
+sell 30
+step 1
+n
+sell 32
+step 2
+n
+sell 33
+step 3
+n
+sell 34
+step 4
+n
+dump
+quit
