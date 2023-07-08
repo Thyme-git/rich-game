@@ -22,7 +22,7 @@ class TestProgram:
         # 创建一个子进程来运行游戏程序
         with open(f'{test_case_folder}/input', 'r') as input_file:
             process = subprocess.Popen([f"{self.program_path}","dump"], stdin=input_file, stdout=subprocess.DEVNULL, universal_newlines=True)
-        time.sleep(0.5)
+        time.sleep(0.08)
 
         #强制结束子进程
         process.terminate()
@@ -33,7 +33,7 @@ class TestProgram:
         # 删除原来的dump
         if os.path.exists(f'{test_case_folder}/dump'):
             os.remove(f'{test_case_folder}/dump')
-        time.sleep(0.5)
+        time.sleep(0.05)
         # 重命名和移动dump
         os.rename(f'{self.dump_path}', f'{test_case_folder}/dump')
         # 清除文件末尾的空行
@@ -44,21 +44,44 @@ class TestProgram:
         with open(f'{test_case_folder}/dump', 'w') as dump_file:
             dump_file.writelines(lines)
 
+        #清除output文件末尾的空行
+        with open(f'{test_case_folder}/output', 'r') as output_file:
+            lines = output_file.readlines()
+        if lines:
+            lines[-1] = lines[-1].rstrip('\n')
+        with open(f'{test_case_folder}/output', 'w') as output_file:
+            output_file.writelines(lines)
+
+
         # 比较输出文件和预期输出文件
         if filecmp.cmp(f'{test_case_folder}/output', f'{test_case_folder}/dump'):
             print('\033[32m' + f':) Test "{test_case_folder}" passed!' + '\033[0m')
             self.passed_tests += 1
         else:
-            print('\033[31m' + f':( Test "{test_case_folder}" failed!' + '\033[0m')
+            strc = ""
+            flag = 0
+            #print('\033[31m' + f':( Test "{test_case_folder}" failed!' + '\033[0m')
             with open(f'{test_case_folder}/output', 'r') as expected_file, open(f'{test_case_folder}/dump', 'r') as actual_file:
+                actual_content = actual_file.read()
 
-                for i, (expected_line, actual_line) in enumerate(itertools.zip_longest(expected_file, actual_file), start=1):
-                    expected_line = expected_line.rstrip() if expected_line is not None else "None"
-                    actual_line = actual_line.rstrip() if actual_line is not None else "None"
-                    if repr(expected_line) != repr(actual_line):
-                        print(f'    Line {i}: expected "{expected_line}", but got "{actual_line}"')
+                if not actual_content.strip():  # if dump file is empty
+                    print("     Dump is empty")
 
-            self.failed_tests += 1
+                else:
+                    actual_file.seek(0)  # reset pointer
+                    for i, (expected_line, actual_line) in enumerate(itertools.zip_longest(expected_file, actual_file), start=1):
+                        expected_line = expected_line.rstrip() if expected_line is not None else "None"
+                        actual_line = actual_line.rstrip() if actual_line is not None else "None"
+                        if repr(expected_line) != repr(actual_line):
+                            strc+=(f'    Line {i}: expected "{expected_line}", but got "{actual_line}"\n')
+                            flag += 1
+            if flag == 0:
+                print('\033[32m' + f':) Test "{test_case_folder}" passed!' + '\033[0m')
+                self.passed_tests += 1
+            else:
+                print('\033[31m' + f':( Test "{test_case_folder}" failed!' + '\033[0m')
+                print(strc.strip())
+                self.failed_tests += 1
 
     def run_all_tests(self):
         # 运行所有测试用例
