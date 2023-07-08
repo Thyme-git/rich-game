@@ -176,6 +176,7 @@ void get_cmd(Game_t* game_ptr, int player_id);
 
 void func_print_hint(Role_enum role);
 void func_display_map(Game_t* game_ptr, int player_id);
+void func_display_with_info(Game_t* game_ptr, int player_id, char* info);
 void func_print_with_color(Color_enum color, char chr);
 void func_update_map_info(Game_t* game_ptr, int player_id);
 
@@ -206,9 +207,9 @@ int func_check_game_over(Game_t* game_ptr);
 
 void func_change_pos(Game_t* game_ptr, int player_id, int dst);
 
-void func_check_buy(Land_t* land_ptr, Player_t* player_ptr);
+void func_check_buy(Game_t* game_ptr, int player_id, int pos);
 
-void func_check_update(Land_t* land_ptr, Player_t* player_ptr);
+void func_check_update(Game_t* game_ptr, int player_id, int pos);
 
 void func_check_buy_update(Game_t* game_ptr, int player_id);
 

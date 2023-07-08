@@ -117,6 +117,7 @@
         "game.h": "c",
         "cmd.h": "c",
         "in.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "stdlib.h": "c"
     }
 }

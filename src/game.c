@@ -5,6 +5,7 @@
 # include "utils.h"
 
 extern char role_symbol[ROLE_NUM];
+extern char info_buf[INPUT_BUFFER_SIZE];
 
 Game_t* func_init_game()
 {
@@ -87,11 +88,9 @@ int func_game_step(Game_t* game_ptr)
             continue;
         }
 
-        // clear
-        system("clear");
 
         // 显示地图
-        func_display_map(game_ptr, player_id);
+        func_display_with_info(game_ptr, player_id, info_buf);
 
         // 读取命令并判断是否有错误、执行
         get_cmd(game_ptr, player_id);
@@ -191,35 +190,40 @@ int func_check_game_over(Game_t* game_ptr)
     return cnt <= 1;
 }
 
-void func_check_buy(Land_t* land_ptr, Player_t* player_ptr)
+void func_check_buy(Game_t* game_ptr, int player_id, int pos)
 {
-    if (func_check_yes_or_no("是否购买该空地？", player_ptr->role))
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
+
+    if (func_check_yes_or_no("是否购买该空地？", player_ptr[player_id]->role))
     {
-        if (player_ptr->money >= land_ptr->base_price)
+        if (player_ptr[player_id]->money >= land_ptr[pos]->base_price)
         {
-            player_ptr->money -= land_ptr->base_price;
-            land_ptr->price += land_ptr->base_price;
-            land_ptr->owner_id = player_ptr->id;
-            printf("购买成功！\n");
+            player_ptr[player_id]->money -= land_ptr[pos]->base_price;
+            land_ptr[pos]->price += land_ptr[pos]->base_price;
+            land_ptr[pos]->owner_id = player_ptr[player_id]->id;
+            sprintf(info_buf, "购买成功！");
         }else{
-            printf("资金不足无法购买！\n");
+            sprintf(info_buf, "资金不足无法购买！");
         }
     }
 }
 
-void func_check_update(Land_t* land_ptr, Player_t* player_ptr)
+void func_check_update(Game_t* game_ptr, int player_id, int pos)
 {
+    Land_t** land_ptr = game_ptr->land_ptr;
+    Player_t** player_ptr = game_ptr->players_ptr;
 
-    if (func_check_yes_or_no("是否升级该房产？", player_ptr->role))
+    if (func_check_yes_or_no("是否升级该房产？", player_ptr[player_id]->role))
     {
-        if (player_ptr->money >= land_ptr->base_price)
+        if (player_ptr[player_id]->money >= land_ptr[pos]->base_price)
         {
-            player_ptr->money -= land_ptr->base_price;
-            land_ptr->price += land_ptr->base_price;
-            land_ptr->type += 1;
-            printf("升级成功！\n");
+            player_ptr[player_id]->money -= land_ptr[pos]->base_price;
+            land_ptr[pos]->price += land_ptr[pos]->base_price;
+            land_ptr[pos]->type += 1;
+            sprintf(info_buf, "升级成功！");
         }else{
-            printf("资金不足无法升级！\n");
+            sprintf(info_buf, "资金不足无法升级！");
         }
     }
 }
@@ -235,12 +239,12 @@ void func_check_buy_update(Game_t* game_ptr, int player_id)
     // 提示购买或升级
     if (land_type == VOID_LAND && land_ptr[pos]->owner_id == -1)
     {
-        func_check_buy(land_ptr[pos], player_ptr[player_id]);
+        func_check_buy(game_ptr, player_id, pos);
         return;  
     }
     if ((land_type == VOID_LAND || land_type == HUT || land_type == HOUSE) && land_ptr[pos]->owner_id == player_id)
     {
-        func_check_update(land_ptr[pos], player_ptr[player_id]);
+        func_check_update(game_ptr, player_id, pos);
         return;
     }
 
@@ -264,7 +268,7 @@ void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos)
 
     func_change_pos(game_ptr, player_id, pos);
     land_ptr[pos]->item = VOID_ITEM;
-    printf("此路不通！\n");
+    sprintf(info_buf, "此路不通！");
 }
 
 /**
@@ -281,7 +285,7 @@ void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos)
     func_change_pos(game_ptr, player_id, HOSPITAL_POS);
     player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
     land_ptr[pos]->item = VOID_ITEM;
-    printf("被炸伤啦，送往医院！\n");
+    sprintf(info_buf, "被炸伤啦，送往医院！");
 }
 
 void func_player_go_prison(Game_t* game_ptr, int player_id)
@@ -337,7 +341,7 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     // 財神祝福
     if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
     {
-        printf("財神附身，可免過路費\n");
+        sprintf(info_buf, "財神附身，可免過路費");
         return;
     }
 
@@ -389,11 +393,7 @@ void func_sell(Game_t* game_ptr, int player_id, int sell_pos)
     land_ptr[sell_pos]->type = VOID_LAND;
     land_ptr[sell_pos]->owner_id = -1;
 
-    // 刷新
-    // clear
-    system("clear");
-    // 显示地图
-    func_display_map(game_ptr, player_id);
+    func_display_with_info(game_ptr, player_id, "售卖成功！");
 }
 
 void func_block(Game_t* game_ptr, int player_id, int block_pos)
@@ -443,11 +443,7 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
     player_ptr[player_id]->barrier_cnt -= 1;
     land_ptr[target_pos]->item = BARRIER;
 
-    // 刷新
-    // clear
-    system("clear");
-    // 显示地图
-    func_display_map(game_ptr, player_id);
+    func_display_with_info(game_ptr, player_id, NULL);
 }
 
 void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
@@ -497,11 +493,7 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
     player_ptr[player_id]->bomb_cnt -= 1;
     land_ptr[target_pos]->item = BOMB;
 
-    // 刷新
-    // clear
-    system("clear");
-    // 显示地图
-    func_display_map(game_ptr, player_id);
+    func_display_with_info(game_ptr, player_id, "投放成功！");
 }
 
 void func_robot(Game_t* game_ptr,int player_id)
@@ -523,11 +515,7 @@ void func_robot(Game_t* game_ptr,int player_id)
 
     player_ptr[player_id]->robot_cnt -= 1;
 
-    // 刷新
-    // clear
-    system("clear");
-    // 显示地图
-    func_display_map(game_ptr, player_id);  
+    func_display_with_info(game_ptr, player_id, "售卖成功！"); 
     return ;
 }
 
@@ -588,7 +576,7 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
 
     if (player_ptr[player_id]->point < MIN_ITEM_PRICE)
     {
-        printf("点数少于最少点数的道具，退出道具屋！\n");
+        sprintf(info_buf, "点数少于最少点数的道具，退出道具屋！");
         return;
     }
 
@@ -644,18 +632,18 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     switch (func_get_gift(player_ptr[player_id]->role))
     {
     case -1:
-        printf("输入错误，放弃选择！\n");
+        sprintf(info_buf, "输入错误，放弃选择！");
         break;
     case 1:
-        printf("获得奖金%d!\n", GIFT_MONEY);
+        sprintf(info_buf, "获得奖金%d!", GIFT_MONEY);
         player_ptr[player_id]->money += GIFT_MONEY;
         break;
     case 2:
-        printf("获得点数%d!\n", GIFT_POINT);
+        sprintf(info_buf, "获得点数%d!", GIFT_POINT);
         player_ptr[player_id]->point += GIFT_POINT;
         break;
     case 3:
-        printf("获得财神祝福%d回合!\n", GIFT_BLESS);
+        sprintf(info_buf, "获得财神祝福%d回合!", GIFT_BLESS);
         player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
         break;
     default:
@@ -708,19 +696,16 @@ int func_check_some_one_here(Game_t* game_ptr, int pos)
 
 void func_change_pos(Game_t* game_ptr, int player_id, int dst)
 {
-    dst = dst % LAND_NUM;
     Player_t** player_ptr = game_ptr->players_ptr;
     Land_t** land_ptr = game_ptr->land_ptr;
     Role_enum role = player_ptr[player_id]->role;
     func_pop(land_ptr[player_ptr[player_id]->pos]->privilige_role, role);
-    func_push(land_ptr[dst]->privilige_role, role);
-    player_ptr[player_id]->pos = dst;
+    func_push(land_ptr[dst % LAND_NUM]->privilige_role, role);
 
-    // 刷新
-    // clear
-    system("clear");
-    // 显示地图
-    func_display_map(game_ptr, player_id);
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "移动了%d步", (dst+LAND_NUM-player_ptr[player_id]->pos)%LAND_NUM);
+    player_ptr[player_id]->pos = dst % LAND_NUM;
+    func_display_with_info(game_ptr, player_id, buf);
 }
 
 // for test

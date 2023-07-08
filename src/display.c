@@ -1,4 +1,5 @@
 # include <stdio.h>
+# include <stdlib.h>
 # include "utils.h"
 
 extern const char land_symbol[LAND_TYPE_NUM];
@@ -7,6 +8,7 @@ const char* color_table[COLOR_NUM] = {"\033[31m", "\033[32m", "\033[33m", "\033[
 const char item_symbol[ITEM_NUM] = {' ', '#', ' ',  '@'};
 // 使用方法：color_table[RED]获取字符串"\033[31m"
 extern const Color_enum role_color[ROLE_NUM];
+char info_buf[INPUT_BUFFER_SIZE];
 
 const char* role_hint[ROLE_NUM] = {
     "\033[31m钱夫人>\033[0m",
@@ -99,4 +101,22 @@ void func_display_map(Game_t* game_ptr, int player_id)
         func_print_with_color(color, symbol);
     }
     putchar('\n');
+}
+
+void func_display_with_info(Game_t* game_ptr, int player_id, char* info)
+{
+    // clear
+    system("clear");
+
+    if (info != NULL){
+        printf("[%s]\n", info);
+    }else{
+        printf("[]\n");
+    }
+
+    // 刷新信息
+    info_buf[0] = '\0';
+
+    // 显示地图
+    func_display_map(game_ptr, player_id);
 }
