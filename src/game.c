@@ -195,7 +195,10 @@ void func_check_buy(Game_t* game_ptr, int player_id, int pos)
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
 
-    if (func_check_yes_or_no("是否购买该空地？", player_ptr[player_id]->role))
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "是否购买该空地？（价格：%d）", land_ptr[pos]->base_price);
+
+    if (func_check_yes_or_no(buf, player_ptr[player_id]->role))
     {
         if (player_ptr[player_id]->money >= land_ptr[pos]->base_price)
         {
@@ -215,7 +218,10 @@ void func_check_update(Game_t* game_ptr, int player_id, int pos)
     Land_t** land_ptr = game_ptr->land_ptr;
     Player_t** player_ptr = game_ptr->players_ptr;
 
-    if (func_check_yes_or_no("是否升级该房产？", player_ptr[player_id]->role))
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "是否升级该房产？（价格：%d）", land_ptr[pos]->base_price);
+
+    if (func_check_yes_or_no(buf, player_ptr[player_id]->role))
     {
         if (player_ptr[player_id]->money >= land_ptr[pos]->base_price)
         {
@@ -356,6 +362,9 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     {
         game_ptr->players_ptr[owner_id]->money -= game_ptr->land_ptr[pos]->price / 2;
         func_bankrupt(game_ptr, player_id);
+        sprintf(info_buf, "破产辣");
+    }else{
+        sprintf(info_buf, "收取了%d租金",game_ptr->land_ptr[pos]->price / 2);
     }
 }
 
