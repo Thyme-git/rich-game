@@ -1,0 +1,16 @@
+10000
+12
+set item A 3 3
+step 10
+n
+step 9
+n
+step 5
+n
+bomb 6
+bomb 5
+bomb 4
+step 1
+n
+dump
+quit

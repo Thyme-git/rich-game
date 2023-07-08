@@ -1,0 +1,19 @@
+23456
+14
+set item Q 1 6
+set item J 1 5
+step 45
+n
+step 12
+n
+block 4
+block 4
+block 3
+block -1
+step 6
+n
+block 2
+block 2
+step 2
+dump
+quit

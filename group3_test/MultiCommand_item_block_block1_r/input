@@ -1,0 +1,15 @@
+10000
+12
+set item Q 1 10
+step 10
+n
+step 9
+n
+block 3
+block -2
+step 5
+n
+step 1
+n
+dump
+quit
