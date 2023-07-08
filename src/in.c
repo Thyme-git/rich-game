@@ -220,14 +220,66 @@ int func_get_gift(Role_enum role)
     return -1;
 }
 
-void func_scanf_str(char buf[])
+
+/**
+ * @brief 
+ * 
+ * @param buf 
+ * @return int 1表示正确读入，2表示非法读入 
+ */
+int func_scanf_str(char buf[])
 {
-    char c;
+    char pre_c = -1;
+    int valid = 1;
     int i = 0;
-    while((c = getchar()) != '\n' && c != EOF)
+    char c = -1;
+    c = getchar();
+    while (valid && i < INPUT_BUFFER_SIZE)
     {
-        buf[i]=c;
-        i++;
+        valid = func_check_valid_char(c);
+        
+        if (!valid)
+        {
+            while ((c = getchar()) != '\n' && c != EOF);
+            return 0;
+        }
+
+        if (c == '\n' || c == EOF)
+        {
+            buf[i++] = '\0';
+            return 1;
+        }
+        
+        if (c == ' ' || c == '\t'){
+            buf[i++] = ' ';
+            if (i == INPUT_BUFFER_SIZE)
+            {
+                while ((c = getchar()) != '\n' && c != EOF);
+                return 0;
+            }
+            while ((c = getchar()) == ' ' || c == '\t');
+            if (c == '\n' || c == EOF){
+                buf[i++] = '\0';
+                return 1;
+            }else{
+                buf[i++] = c;
+            }
+        }else{
+            buf[i++] = c;
+        }
+        c = getchar();
     }
-    buf[i] = '\0';
+
+    if (i == INPUT_BUFFER_SIZE)
+    {
+        while ((c = getchar()) != '\n' && c != EOF);
+        return 0;
+    }
+
+    return 1;
+}
+
+int func_check_valid_char(char c)
+{
+    return (c <= '9' && c >= '0') || (c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || c == ' ' || c == '\n' || c == '\t' || c == EOF;
 }

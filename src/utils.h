@@ -292,8 +292,9 @@ int scanf_num();
 int func_check_yes_or_no(const char* hint, Role_enum role);
 int func_check_blank_input(char buf[]);
 Item_enum func_get_item(Role_enum role);
+int func_check_valid_char(char c);
 int func_get_gift(Role_enum role);
-void func_scanf_str(char buf[]);
+int func_scanf_str(char buf[]);
 
 void func_init_land(Land_t* land_ptr[]);
 
