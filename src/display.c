@@ -53,7 +53,7 @@ void func_update_map_info(Game_t* game_ptr, int player_id)
 
         if (func_check_some_one_here(game_ptr, i))
         {
-            Role_enum role = land_ptr[i]->privilige_role->next->role;
+            Role_enum role = func_tail(land_ptr[i]->privilige_role);
             land_ptr[i]->symbol = role_symbol[role];
             land_ptr[i]->color = role_color[role];
         }

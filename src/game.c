@@ -388,6 +388,12 @@ void func_sell(Game_t* game_ptr, int player_id, int sell_pos)
     land_ptr[sell_pos]->price = 0;
     land_ptr[sell_pos]->type = VOID_LAND;
     land_ptr[sell_pos]->owner_id = -1;
+
+    // 刷新
+    // clear
+    system("clear");
+    // 显示地图
+    func_display_map(game_ptr, player_id);
 }
 
 void func_block(Game_t* game_ptr, int player_id, int block_pos)
@@ -436,6 +442,12 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
 
     player_ptr[player_id]->barrier_cnt -= 1;
     land_ptr[target_pos]->item = BARRIER;
+
+    // 刷新
+    // clear
+    system("clear");
+    // 显示地图
+    func_display_map(game_ptr, player_id);
 }
 
 void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
@@ -484,6 +496,12 @@ void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
 
     player_ptr[player_id]->bomb_cnt -= 1;
     land_ptr[target_pos]->item = BOMB;
+
+    // 刷新
+    // clear
+    system("clear");
+    // 显示地图
+    func_display_map(game_ptr, player_id);
 }
 
 void func_robot(Game_t* game_ptr,int player_id)
@@ -503,7 +521,13 @@ void func_robot(Game_t* game_ptr,int player_id)
         land_ptr[(pos+i) % LAND_NUM]->item=VOID_ITEM;
     }
 
-    player_ptr[player_id]->robot_cnt -= 1;    
+    player_ptr[player_id]->robot_cnt -= 1;
+
+    // 刷新
+    // clear
+    system("clear");
+    // 显示地图
+    func_display_map(game_ptr, player_id);  
     return ;
 }
 
@@ -691,6 +715,12 @@ void func_change_pos(Game_t* game_ptr, int player_id, int dst)
     func_pop(land_ptr[player_ptr[player_id]->pos]->privilige_role, role);
     func_push(land_ptr[dst]->privilige_role, role);
     player_ptr[player_id]->pos = dst;
+
+    // 刷新
+    // clear
+    system("clear");
+    // 显示地图
+    func_display_map(game_ptr, player_id);
 }
 
 // for test

@@ -30,7 +30,10 @@ class TestProgram:
         #检查进程是否已经结束，如果没有，等待它结束
         if process.poll() is None:
             process.communicate()
-
+        # 删除原来的dump
+        if os.path.exists(f'{test_case_folder}/dump'):
+            os.remove(f'{test_case_folder}/dump')
+        time.sleep(0.05)
         # 重命名和移动dump
         os.rename(f'{self.dump_path}', f'{test_case_folder}/dump')
         # 清除文件末尾的空行
@@ -54,7 +57,7 @@ class TestProgram:
                     actual_line = actual_line.rstrip() if actual_line is not None else "None"
                     if repr(expected_line) != repr(actual_line):
                         print(f'    Line {i}: expected "{expected_line}", but got "{actual_line}"')
-                          
+
             self.failed_tests += 1
 
     def run_all_tests(self):
@@ -63,7 +66,7 @@ class TestProgram:
             self.run_test(test_case_folder)
 
         print('\033[33m' + 'RESULT'.center(80, '=') + '\033[0m')
-        print('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m')
+        print('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m', end=' ')
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -72,4 +75,9 @@ if __name__ == '__main__':
     game = sys.argv[1]
     test_folder = sys.argv[2]
     tester = TestProgram(f'./{game}', test_folder, './dump')
+    start = time.perf_counter()
+
     tester.run_all_tests()
+
+    end = time.perf_counter()
+    print(f'Totally takes time: {end - start}s')
