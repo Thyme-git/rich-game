@@ -22,7 +22,7 @@ class TestProgram:
         # 创建一个子进程来运行游戏程序
         with open(f'{test_case_folder}/input', 'r') as input_file:
             process = subprocess.Popen([f"{self.program_path}","dump"], stdin=input_file, stdout=subprocess.DEVNULL, universal_newlines=True)
-        time.sleep(0.05)
+        time.sleep(0.5)
 
         #强制结束子进程
         process.terminate()
