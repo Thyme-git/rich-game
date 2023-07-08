@@ -1,28 +1,28 @@
-user QA
+user QASJ
 preuser Q
 Q
 alive 1
-money 1500
+money 12312
 point 0
 item1 0
 item2 0
 item3 0
-buff 5
+buff 0
 stop 0
 userloc 0
 A
 alive 1
-money 1500
+money 12312
 point 0
 item1 0
 item2 0
 item3 0
-buff 3
+buff 0
 stop 0
 userloc 0
 S
-alive 0
-money 0
+alive 1
+money 12312
 point 0
 item1 0
 item2 0
@@ -31,8 +31,8 @@ buff 0
 stop 0
 userloc 0
 J
-alive 0
-money 0
+alive 1
+money 12312
 point 0
 item1 0
 item2 0
@@ -41,4 +41,4 @@ buff 0
 stop 0
 userloc 0
 MAP
-mapuser 0 QA
+mapuser 0 QASJ
