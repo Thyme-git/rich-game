@@ -4,6 +4,7 @@ import filecmp
 import subprocess
 import itertools
 import time
+import sys
 
 class TestProgram:
     def __init__(self, program_path, test_folder, dump_path):
@@ -65,5 +66,10 @@ class TestProgram:
         print('\033[32m' + f'Passed tests: ({self.passed_tests}/{self.failed_tests + self.passed_tests})' + '\033[0m')
 
 if __name__ == '__main__':
-    tester = TestProgram('./main', 'test1', 'dump')#改test为你的文件夹名称，会自动遍历里面的小文件夹
+    if len(sys.argv) != 3:
+        print('Usage: python test.py <game> <test_folder>')
+        sys.exit(1)
+    game = sys.argv[1]
+    test_folder = sys.argv[2]
+    tester = TestProgram(f'./{game}', test_folder, './dump')
     tester.run_all_tests()
