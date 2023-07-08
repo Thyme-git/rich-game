@@ -76,7 +76,8 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     {
         if(land_ptr[land_pos]->owner_id!=-1)
         {
-            fprintf(fin,"\nmap %d %c %d",land_pos,role_symbol[land_ptr[land_pos]->owner_id],land_ptr[land_pos]->type);
+            Role_enum role = game_ptr->players_ptr[land_ptr[land_pos]->owner_id]->role;
+            fprintf(fin,"\nmap %d %c %d",land_pos,role_symbol[role],land_ptr[land_pos]->type);
             fflush(fin);
         }
     }
