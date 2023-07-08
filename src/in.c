@@ -202,7 +202,8 @@ int func_get_gift(Role_enum role)
     while(!func_reg_match(reg_ptr, buf))
     {
         if (!func_check_blank_input(buf)){
-            break;
+            func_free_reg(reg_ptr);
+            return -1;
         }
         func_print_hint(role);
         func_scanf_str(buf);
