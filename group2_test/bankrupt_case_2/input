@@ -1,0 +1,11 @@
+10000
+1234
+set money Q 0
+step 5
+n
+step 0
+step 0
+step 0
+dump
+quit
+//测试直接设置资产为零是否破产

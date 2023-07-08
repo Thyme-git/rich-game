@@ -1,0 +1,47 @@
+user QASJ
+preuser Q
+Q
+alive 1
+money 1000
+point 0
+item1 1
+item2 2
+item3 0
+buff 0
+stop 0
+userloc 5
+A
+alive 1
+money 1000
+point 0
+item1 0
+item2 3
+item3 1
+buff 0
+stop 0
+userloc 7
+S
+alive 1
+money 1000
+point 0
+item1 0
+item2 5
+item3 1
+buff 0
+stop 0
+userloc 11
+J
+alive 1
+money 1000
+point 0
+item1 0
+item2 1
+item3 1
+buff 0
+stop 0
+userloc 19
+MAP
+mapuser 5 Q
+mapuser 7 A
+mapuser 11 S
+mapuser 19 J

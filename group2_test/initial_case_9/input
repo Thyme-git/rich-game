@@ -1,0 +1,13 @@
+20000
+1234
+set point Q 0
+set point A 10
+set point S 20
+set point J 30
+step 64
+step 65
+step 66
+step 67
+dump 
+quit
+//测试点数和矿地

@@ -1,0 +1,19 @@
+1000
+1324
+set money Q 1000   
+set money J 5000
+set pos Q 1
+set pos S 30
+set pos A 32
+set pos J 40
+set map 4 J 0
+set map 31 J 1
+set map 34 S 2
+set map 44 S 3
+step 3
+step 1
+step 2
+step 4
+dump
+quit
+//

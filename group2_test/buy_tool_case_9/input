@@ -1,0 +1,8 @@
+10000
+1234
+set point Q 200
+set item Q 1 10
+step 28
+dump
+quit
+//

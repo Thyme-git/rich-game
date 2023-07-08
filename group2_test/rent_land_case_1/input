@@ -1,0 +1,20 @@
+5000
+1324
+set pos Q 1
+set pos S 3
+set pos A 5
+set pos J 7
+set buff S 5
+set stop J 2
+set map 2 Q 0
+set map 4 A 1
+set map 6 J 2
+set map 8 S 3
+step 1
+n
+step 1
+step 1
+dump
+quit
+
+//no rent

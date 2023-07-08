@@ -1,0 +1,26 @@
+1000
+1234
+set pos A 3
+set pos S 30
+set pos J 66
+set bomb 12
+set map 16 J 0
+set map 34 J 3
+set item A 1 1
+set item A 1 2
+set item S 1 3
+set item J 1 4
+barrier 3
+step 1                  
+N   
+barrier 12              
+step 1              
+N 
+barrier 16
+step 1
+N   
+barrier 34  
+step 1
+dump
+quit
+//ineffective setting:player and tool

@@ -1,0 +1,25 @@
+1000
+1234
+set pos A 3
+set pos S 30
+set pos J 66
+set item A 1 1
+set item A 1 2
+set item S 1 3
+set item J 1 4
+barrier 14
+step 1                  
+N                      
+barrier 49   
+step 1              
+N 
+barrier 28 
+barrier 35 
+step 1
+N     
+barrier 63
+barrier 64
+step 1
+dump
+quit
+//special case

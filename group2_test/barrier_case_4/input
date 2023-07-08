@@ -1,0 +1,9 @@
+1000
+1234
+set item Q 1 1
+block 11
+step 12
+n
+dump
+quit
+//玩家使用无效设置:n=11

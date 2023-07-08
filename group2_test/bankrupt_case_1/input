@@ -1,0 +1,11 @@
+1000
+124
+set map 37 A 2
+set money J 1
+step 0
+step 0
+step 37
+dump
+quit
+//测试正常破产功能
+//破产之后还在map上

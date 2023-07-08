@@ -1,0 +1,31 @@
+1000
+1234
+set pos Q 2
+set pos A 3
+set pos S 10
+set pos J 17
+set item Q 2 3
+set item Q 1 2
+set item A 2 4
+set item A 3 2
+set item S 2 5
+set item S 3 2
+set item J 2 2
+set item J 3 1
+barrier 2
+robot
+step 3
+N
+bomb 3
+robot
+step 4
+N
+bomb 8
+step 1
+N
+robot
+step 2
+N
+dump
+quit
+//

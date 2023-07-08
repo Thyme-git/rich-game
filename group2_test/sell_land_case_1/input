@@ -1,0 +1,25 @@
+10000
+1324
+set pos Q 1
+set pos S 2
+set pos A 3
+set pos J 4
+set map 3 Q 0
+set map 16 S 1
+set map 32 A 2
+set map 51 J 3
+sell 16
+step 1
+n
+sell 17
+step 1
+n
+sell -1
+step 1
+n
+sell 70
+step 1
+n
+dump
+quit
+//fail to sell
