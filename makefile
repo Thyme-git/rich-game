@@ -5,7 +5,7 @@ main:
 	gcc src/*.c -o bin/rich
 
 clean:
-	rm rich
+	rm bin/rich
 else
 main.exe:
 	mingw64/bin/gcc src/*c -o bin/rich.exe -I src/regex/include/ -L src/regex/lib/ -l regex -static -m32
