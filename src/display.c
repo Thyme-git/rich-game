@@ -5,7 +5,7 @@
 extern const char land_symbol[LAND_TYPE_NUM];
 extern const char role_symbol[ROLE_NUM];
 const char* color_table[COLOR_NUM] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[0m"};
-const char item_symbol[ITEM_NUM] = {' ', '#', ' ',  '@'};
+const char item_symbol[ITEM_NUM] = {' ', '#', ' ',  'F'};
 // 使用方法：color_table[RED]获取字符串"\033[31m"
 extern const Color_enum role_color[ROLE_NUM];
 char info_buf[INPUT_BUFFER_SIZE];
@@ -83,8 +83,8 @@ void func_display_map(Game_t* game_ptr, int player_id)
     // 打印中间部分
     for (int i = 1; i < GIFT_POS-TOOL_POS; ++i)
     {   
-        char symbol = land_ptr[MAGIC_POS+7-i]->symbol;
-        Color_enum color = land_ptr[MAGIC_POS+7-i]->color;
+        char symbol = land_ptr[MAGIC_PARK_POS+7-i]->symbol;
+        Color_enum color = land_ptr[MAGIC_PARK_POS+7-i]->color;
         func_print_with_color(color, symbol);
         printf(SPACE_STR);
         symbol = land_ptr[i+TOOL_POS]->symbol;
@@ -94,7 +94,7 @@ void func_display_map(Game_t* game_ptr, int player_id)
     }
 
     // 打印最后一行
-    for (int i = MAGIC_POS; i >= GIFT_POS; --i)
+    for (int i = MAGIC_PARK_POS; i >= GIFT_POS; --i)
     {
         char symbol = land_ptr[i]->symbol;
         Color_enum color = land_ptr[i]->color;
@@ -115,7 +115,7 @@ void func_display_with_info(Game_t* game_ptr, int player_id, char* info)
     Player_t* player_ptr = game_ptr->players_ptr[player_id];
 
     // 显示角色状态栏
-    printf("[%c：位置%d|金钱%d|点数%d|路障%d|炸弹%d|机器娃娃%d|财神祝福%d|空地%d|茅屋%d|房子%d|摩天楼%d]\n", role_symbol[player_ptr->role], player_ptr->pos, player_ptr->money, player_ptr->point, player_ptr->barrier_cnt, player_ptr->bomb_cnt, player_ptr->robot_cnt, player_ptr->free_of_toll_cnt, player_ptr->solid_property_cnt[VOID_LAND], player_ptr->solid_property_cnt[HUT], player_ptr->solid_property_cnt[HOUSE], player_ptr->solid_property_cnt[SKYCRAPER]);
+    printf("[%c：位置%d|金钱%d|点数%d|路障%d|机器娃娃%d|财神祝福%d|空地%d|茅屋%d|房子%d|摩天楼%d]\n", role_symbol[player_ptr->role], player_ptr->pos, player_ptr->money, player_ptr->point, player_ptr->barrier_cnt, player_ptr->robot_cnt, player_ptr->free_of_toll_cnt, player_ptr->solid_property_cnt[VOID_LAND], player_ptr->solid_property_cnt[HUT], player_ptr->solid_property_cnt[HOUSE], player_ptr->solid_property_cnt[SKYCRAPER]);
 
     if (info != NULL){
         printf("[%s]\n", info);

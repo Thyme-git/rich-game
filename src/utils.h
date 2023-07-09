@@ -7,10 +7,10 @@
 # define LAND_NUM 70
 # define START_POS 0
 # define TOOL_POS 28
-# define HOSPITAL_POS 14
+# define HOSPITAL_PARK_POS 14 // change
 # define GIFT_POS 35
-# define PRISON_POS 49
-# define MAGIC_POS 63
+# define PRISON_PARK_POS 49 // change
+# define MAGIC_PARK_POS 63 // change
 # define LAND_1_PRICE 200 
 # define LAND_2_PRICE 500
 # define LAND_3_PRICE 300
@@ -34,14 +34,19 @@
 
 # define BARRIER_PRICE 50
 # define ROBOT_PRICE 30
-# define BOMB_PRICE 50
-# define MIN_ITEM_PRICE (BARRIER_PRICE > ROBOT_PRICE ?          \
-    (ROBOT_PRICE > BOMB_PRICE ? BOMB_PRICE : ROBOT_PRICE) :     \
-    (BARRIER_PRICE > BOMB_PRICE ? BOMB_PRICE : BARRIER_PRICE)   \
-    )
+# define MIN_ITEM_PRICE (BARRIER_PRICE > ROBOT_PRICE ? ROBOT_PRICE : BARRIER_PRICE)
+// # define BOMB_PRICE 50
+// # define MIN_ITEM_PRICE (BARRIER_PRICE > ROBOT_PRICE ?          \
+//     (ROBOT_PRICE > BOMB_PRICE ? BOMB_PRICE : ROBOT_PRICE) :     \
+//     (BARRIER_PRICE > BOMB_PRICE ? BOMB_PRICE : BARRIER_PRICE)   \
+//     )
 
 # define REGEX_MAX_LEN 64
 # define REGEX_NUM 20
+
+# define BUFF_OCCUR_TIME 10
+# define BUFF_OCCUR_INTERVAL 10
+# define BUFF_MAX_KEEP_TIME 5
 
 # define INPUT_BUFFER_SIZE 1024
 
@@ -65,9 +70,9 @@ typedef enum _Land_enum
 ,   START // 起点 S
 ,   TOOL // 道具屋 T
 ,   GIFT // 礼品屋 G
-,   MAGIC // 魔法屋 M
-,   HOSPITAL // 医院 H
-,   PRISON // 监狱 P
+,   MAGIC_PARK // 魔法屋 M
+,   HOSPITAL_PARK // 医院 H
+,   PRISON_PARK // 监狱 P
 ,   MINE // 矿地 $
 } Land_enum; // nyw 添加
 
@@ -76,7 +81,7 @@ typedef enum _Item
     VOID_ITEM // 无道具
 ,   BARRIER // 路障
 ,   ROBOT // 机器娃娃
-,   BOMB // 炸弹
+,   BUFF // 炸弹换成财神
 }Item_enum; // 道具类型
 
 typedef enum _Role {
@@ -114,7 +119,7 @@ typedef struct _Player
     int money; // 玩家拥有的金钱数量，用来买地和房子，注意有初始资金
     int point; // 玩家拥有的点数，用来买道具
     int barrier_cnt; // 玩家拥有的路障数量
-    int bomb_cnt; // 玩家拥有的炸弹数量
+    // int bomb_cnt; // 玩家拥有的炸弹数量
     int robot_cnt; // 玩家拥有的机器娃娃数量
     int free_of_toll_cnt; // 玩家拥有面过路费的次数，当获得财神礼品时刷新为5或加5？
     int recovery_time_cnt; // 玩家被炸伤后剩余的恢复天数，被炸伤后变为3;
@@ -133,6 +138,10 @@ typedef struct _Game
     // int curr_player_id; // 当前玩家id，初始化为0;考虑去除，可能用不到
 
     Land_t* land_ptr[LAND_NUM]; // 游戏的地图
+
+    int buff_on; // 1表示当前回合有财神buff
+    int next_buff_time; // 下一次出现财神buff的回合
+    int buff_keep_time; // buff在地图上出现的回合数（没有被玩家捡到）
 } Game_t;
 
 
@@ -196,11 +205,11 @@ void func_init_money(Game_t* game_ptr);
 /**
  * @brief 
  * 使用方法
- * int done = func_game_step(game_ptr)
+ * int done = func_game_step(game_ptr, round_num)
  * 运行一回合，即所有可以动的玩家进行一次投骰子
  * 当返回为1时，游戏结束
  */
-int func_game_step(Game_t* game_ptr);
+int func_game_step(Game_t* game_ptr, int round_num);
 
 void func_free_mem(Game_t* game_ptr);
 
@@ -218,11 +227,11 @@ void func_check_buy_update(Game_t* game_ptr, int player_id);
 
 int func_roll(Game_t* game_ptr, int player_id);
 
-void func_player_go_prison(Game_t* game_ptr, int player_id);
+// void func_player_go_prison(Game_t* game_ptr, int player_id);
 
 void func_step(Game_t* game_ptr, int player_id, int steps);
 
-void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos);
+// void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos);
 
 void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos);
 
@@ -230,7 +239,7 @@ void func_sell(Game_t* game_ptr, int player_id, int sell_pos);
 
 void func_block(Game_t* game_ptr, int player_id, int block_pos);
 
-void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos);
+// void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos);
 
 void func_robot(Game_t* game_ptr,int player_id);
 
@@ -250,28 +259,36 @@ void func_pass_tool(Game_t* game_ptr,int player_id);
 
 void func_pass_gift(Game_t* game_ptr,int player_id);
 
-void func_pass_magic(Game_t* game_ptr,int player_id);
+int func_check_buff_valid_pos(Game_t* game_ptr, int pos);
 
-int func_check_special_pos(Game_t* game_ptr, int pos);
+void func_put_buff(Game_t* game_ptr, int pos);
+
+void func_generate_buff(Game_t* game_ptr);
+
+// void func_pass_magic(Game_t* game_ptr,int player_id);
+
+// int func_check_special_pos(Game_t* game_ptr, int pos);
 
 int func_check_some_one_here(Game_t* game_ptr, int pos);
 
 void get_role_order(Role_enum order[]);
+
+void func_pass_park(Game_t* game_ptr,int player_id);
 
 // from here test
 void func_set_barrier(Game_t* game_ptr, int barrier_pos);
 
 void func_set_unmap(Game_t* game_ptr, int unmap_pos);
 
-void func_set_bomb(Game_t* game_ptr, int bomb_pos);
+// void func_set_bomb(Game_t* game_ptr, int bomb_pos);
 
-void func_set_stop(Game_t* game_ptr, const char name, int stop_time);
+// void func_set_stop(Game_t* game_ptr, const char name, int stop_time);
 
 void func_set_map(Game_t* game_ptr, const char name, int map_pos, int level);
 
 void func_set_money(Game_t* game_ptr, char role_char, int money_num);
 
-void func_set_buff(Game_t* game_ptr, const char name,int buff_num);
+void func_set_buff(Game_t* game_ptr, const char name, int buff_num);
 
 void func_set_item(Game_t* game_ptr, const char name, int item_type, int item_num);
 

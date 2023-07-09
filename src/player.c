@@ -11,7 +11,7 @@ Player_t* func_init_player(Role_enum role, int id, int init_money)
 {
     Player_t * player = (Player_t *)malloc(sizeof(Player_t));
     player->barrier_cnt = 0;
-    player->bomb_cnt = 0;
+    // player->bomb_cnt = 0;
     player->color = role_color[role];
     player->role = role;
     player->money = init_money;
@@ -31,5 +31,6 @@ Player_t* func_init_player(Role_enum role, int id, int init_money)
 
 int func_count_item_num(Player_t* player_ptr)
 {
-    return player_ptr->barrier_cnt + player_ptr->bomb_cnt + player_ptr->robot_cnt;
+    // return player_ptr->barrier_cnt + player_ptr->bomb_cnt + player_ptr->robot_cnt;
+    return player_ptr->barrier_cnt + player_ptr->robot_cnt;
 }

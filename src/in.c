@@ -155,7 +155,7 @@ Item_enum func_get_item(Role_enum role)
     
     for (int i = 0; buf[i] != '\0'; ++i)
     {
-        if (buf[i] <= '3' && buf[i] >= '1')
+        if (buf[i] <= '2' && buf[i] >= '1')
         {
             return buf[i]-'0';
         }
@@ -196,7 +196,7 @@ int func_get_gift(Role_enum role)
 {
     char buf[INPUT_BUFFER_SIZE];
     int ret = 0;
-    Reg_t* reg_ptr = func_init_reg(get_item_regex);
+    Reg_t* reg_ptr = func_init_reg(get_gift_regex);
     func_print_hint(role);
     func_scanf_str(buf);
     while(!func_reg_match(reg_ptr, buf))
@@ -212,7 +212,7 @@ int func_get_gift(Role_enum role)
     
     for (int i = 0; buf[i] != '\0'; ++i)
     {
-        if (buf[i] <= '3' && buf[i] >= '1')
+        if (buf[i] <= '2' && buf[i] >= '1')
         {
             return buf[i]-'0';
         }

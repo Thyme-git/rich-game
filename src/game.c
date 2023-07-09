@@ -11,6 +11,8 @@ Game_t* func_init_game()
 {
     Game_t* game_ptr = (Game_t*)malloc(sizeof(Game_t));
     game_ptr->player_num = 0;
+    game_ptr->buff_on = 0;
+    game_ptr->next_buff_time = -1;
 
     // 输入玩家初始基金
     func_init_money(game_ptr);
@@ -56,10 +58,22 @@ HERE:
     }
 }
 
-int func_game_step(Game_t* game_ptr)
+int func_game_step(Game_t* game_ptr, int round_num)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
     Land_t** land_ptr = game_ptr->land_ptr;
+
+    if (game_ptr->buff_on == 0 && game_ptr->next_buff_time == -1 && round_num >= BUFF_OCCUR_TIME)
+    {
+        game_ptr->next_buff_time = round_num + rand() % BUFF_OCCUR_INTERVAL;
+    }
+
+    if (game_ptr->buff_on == 0 && game_ptr->next_buff_time == round_num)
+    {
+        func_generate_buff(game_ptr);
+        game_ptr->buff_on = 1;
+        game_ptr->buff_keep_time = 0;
+    }
 
     for (int player_id = 0; player_id < game_ptr->player_num; ++player_id)
     {  
@@ -77,14 +91,7 @@ int func_game_step(Game_t* game_ptr)
         
         // 还在医院则不执行操作
         if (player_ptr[player_id]->recovery_time_cnt > 0){
-            player_ptr[player_id]->recovery_time_cnt -= 1;
-            
-            // 減少財神次數
-            if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
-            {
-                game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
-            }
-            
+            player_ptr[player_id]->recovery_time_cnt -= 1; 
             continue;
         }
 
@@ -108,14 +115,23 @@ int func_game_step(Game_t* game_ptr)
             func_pass_tool(game_ptr, player_id);
         }
 
-        // 魔法屋
-        // ...
-
-
-        // 坐牢
-        if (pos == PRISON_POS)
+        // 魔法屋park
+        if (pos == MAGIC_PARK_POS)
         {
-            func_player_go_prison(game_ptr, player_id);
+            func_pass_park(game_ptr, player_id);
+        }
+
+
+        // 坐牢park
+        if (pos == PRISON_PARK_POS)
+        {
+            func_pass_park(game_ptr, player_id);
+        }
+
+        // 医院park
+        if (pos == HOSPITAL_PARK_POS)
+        {
+            func_pass_park(game_ptr, player_id);
         }
 
         // 禮品屋
@@ -126,14 +142,35 @@ int func_game_step(Game_t* game_ptr)
 
         // 礦山
         func_get_point(game_ptr, player_id);
+        
+
+        // 捡到财神
+        if (game_ptr->land_ptr[pos]->item == BUFF)
+        {
+            game_ptr->players_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
+            game_ptr->buff_keep_time = 0;
+        }
 
         // 收租啦
         func_pay_toll(game_ptr, player_id);
 
+    }
+
+    if (game_ptr->buff_on == 1)
+    {
         // 減少財神次數
-        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        for (int player_id = 0; player_id < game_ptr->player_num; ++player_id){
+            if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+            {
+                game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+            }
+        }
+        
+        game_ptr->buff_keep_time += 1;
+        if (game_ptr->buff_keep_time >= BUFF_MAX_KEEP_TIME)
         {
-            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+            game_ptr->buff_on = 0;
+            game_ptr->next_buff_time = -1;
         }
     }
     return 0;
@@ -286,22 +323,22 @@ void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos)
  * @param player_id 
  * @param pos 
  */
-void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos)
-{
-    Land_t** land_ptr = game_ptr->land_ptr;
-    Player_t** player_ptr = game_ptr->players_ptr;
+// void func_suffer_bomb(Game_t* game_ptr, int player_id, int pos)
+// {
+//     Land_t** land_ptr = game_ptr->land_ptr;
+//     Player_t** player_ptr = game_ptr->players_ptr;
     
-    func_change_pos(game_ptr, player_id, HOSPITAL_POS);
-    player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
-    land_ptr[pos]->item = VOID_ITEM;
-    sprintf(info_buf, "被炸伤啦，送往医院！");
-}
+//     func_change_pos(game_ptr, player_id, HOSPITAL_POS);
+//     player_ptr[player_id]->recovery_time_cnt = RECOVERY_TIME;
+//     land_ptr[pos]->item = VOID_ITEM;
+//     sprintf(info_buf, "被炸伤啦，送往医院！");
+// }
 
-void func_player_go_prison(Game_t* game_ptr, int player_id)
-{
-    Player_t** player_ptr = game_ptr->players_ptr;
-    player_ptr[player_id]->recovery_time_cnt = PRISON_TIME;
-}
+// void func_player_go_prison(Game_t* game_ptr, int player_id)
+// {
+//     Player_t** player_ptr = game_ptr->players_ptr;
+//     player_ptr[player_id]->recovery_time_cnt = PRISON_TIME;
+// }
 
 void func_step(Game_t* game_ptr, int player_id, int steps)
 {
@@ -312,12 +349,12 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     
     for (int i = 0; i < steps; ++i)
     {
-        // 遇到炸弹
-        if (land_ptr[(i+start_pos) % LAND_NUM]->item == BOMB)
-        {
-            func_suffer_bomb(game_ptr, player_id, (i+start_pos) % LAND_NUM);
-            return;
-        }
+        // // 遇到炸弹
+        // if (land_ptr[(i+start_pos) % LAND_NUM]->item == BOMB)
+        // {
+        //     func_suffer_bomb(game_ptr, player_id, (i+start_pos) % LAND_NUM);
+        //     return;
+        // }
 
         // 遇到路障
         if (land_ptr[(i+start_pos) % LAND_NUM]->item == BARRIER)
@@ -433,13 +470,6 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
         target_pos += LAND_NUM;
     }
 
-    // 特殊位置不能放
-    if (func_check_special_pos(game_ptr, target_pos))
-    {
-        printf("特殊位置不能投放！\n");
-        return;
-    }
-
     // 有人不能放
     if (func_check_some_one_here(game_ptr, target_pos))
     {
@@ -459,55 +489,55 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
     func_display_with_info(game_ptr, player_id, NULL);
 }
 
-void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
-{
-    Land_t** land_ptr = game_ptr->land_ptr;
-    Player_t** player_ptr = game_ptr->players_ptr;
-    int pos = player_ptr[player_id]->pos;
+// void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
+// {
+//     Land_t** land_ptr = game_ptr->land_ptr;
+//     Player_t** player_ptr = game_ptr->players_ptr;
+//     int pos = player_ptr[player_id]->pos;
 
-    if (player_ptr[player_id]->bomb_cnt <= 0)
-    {
-        printf("你没有炸弹可以投放！\n");
-        return;
-    }
+//     if (player_ptr[player_id]->bomb_cnt <= 0)
+//     {
+//         printf("你没有炸弹可以投放！\n");
+//         return;
+//     }
 
-    if (bomb_pos < -10 || bomb_pos > 10)
-    {
-        printf("投放的距离太远！\n");
-        return;
-    }
+//     if (bomb_pos < -10 || bomb_pos > 10)
+//     {
+//         printf("投放的距离太远！\n");
+//         return;
+//     }
 
-    int target_pos = (pos + bomb_pos) % LAND_NUM;
-    if (target_pos < 0)
-    {
-        target_pos += LAND_NUM;
-    }
+//     int target_pos = (pos + bomb_pos) % LAND_NUM;
+//     if (target_pos < 0)
+//     {
+//         target_pos += LAND_NUM;
+//     }
 
-    // 特殊位置不能放
-    if (func_check_special_pos(game_ptr, target_pos))
-    {
-        printf("特殊位置不能投放！\n");
-        return;
-    }
+//     // 特殊位置不能放
+//     if (func_check_special_pos(game_ptr, target_pos))
+//     {
+//         printf("特殊位置不能投放！\n");
+//         return;
+//     }
 
-    // 有人不能放炸弹
-    if (func_check_some_one_here(game_ptr, target_pos))
-    {
-        printf("有玩家的位置不能投放！\n");
-        return;
-    }
+//     // 有人不能放炸弹
+//     if (func_check_some_one_here(game_ptr, target_pos))
+//     {
+//         printf("有玩家的位置不能投放！\n");
+//         return;
+//     }
 
-    if (land_ptr[target_pos]->item != VOID_ITEM)
-    {
-        printf("此处已经有道具，不能再次放！\n");
-        return;
-    }
+//     if (land_ptr[target_pos]->item != VOID_ITEM)
+//     {
+//         printf("此处已经有道具，不能再次放！\n");
+//         return;
+//     }
 
-    player_ptr[player_id]->bomb_cnt -= 1;
-    land_ptr[target_pos]->item = BOMB;
+//     player_ptr[player_id]->bomb_cnt -= 1;
+//     land_ptr[target_pos]->item = BOMB;
 
-    func_display_with_info(game_ptr, player_id, "投放成功！");
-}
+//     func_display_with_info(game_ptr, player_id, "投放成功！");
+// }
 
 void func_robot(Game_t* game_ptr,int player_id)
 {
@@ -541,7 +571,7 @@ void func_query(Game_t* game_ptr,int player_id)
     printf("点数:%d\n", player_ptr[player_id]->point);
     printf("财神祝福:%d\n", player_ptr[player_id]->free_of_toll_cnt);
     printf("路障:%d\n", player_ptr[player_id]->barrier_cnt);
-    printf("炸弹:%d\n", player_ptr[player_id]->bomb_cnt);
+    // printf("炸弹:%d\n", player_ptr[player_id]->bomb_cnt);
     printf("机器娃娃:%d\n", player_ptr[player_id]->robot_cnt);
     printf("空地:%d\n", player_ptr[player_id]->solid_property_cnt[VOID_LAND]);
     printf("茅屋:%d\n", player_ptr[player_id]->solid_property_cnt[HUT]);
@@ -587,7 +617,7 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
     printf("欢迎光临道具屋，请选择您需要的道具:\n");
     printf("1.路障 所需价值点数%d\n", BARRIER_PRICE);
     printf("2.机器娃娃 所需价值点数为%d\n", ROBOT_PRICE);
-    printf("3.炸弹 所需价值点数为%d\n", BOMB_PRICE);
+    // printf("3.炸弹 所需价值点数为%d\n", BOMB_PRICE);
     printf("按'F'退出道具屋\n");
     // func_print_hint(player_ptr[player_id]->role);
 
@@ -622,16 +652,17 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
                 player_ptr[player_id]->robot_cnt += 1;
                 printf("购买成功！\n");
             }
-        }else if (choice == BOMB){
-            if (player_ptr[player_id]->point < BOMB_PRICE)
-            {
-                printf("你的点数不足，请重新选择！\n");
-            }else{
-                player_ptr[player_id]->point -= BOMB_PRICE;
-                player_ptr[player_id]->bomb_cnt += 1;
-                printf("购买成功！\n");
-            }
         }
+        // else if (choice == BOMB){
+        //     if (player_ptr[player_id]->point < BOMB_PRICE)
+        //     {
+        //         printf("你的点数不足，请重新选择！\n");
+        //     }else{
+        //         player_ptr[player_id]->point -= BOMB_PRICE;
+        //         player_ptr[player_id]->bomb_cnt += 1;
+        //         printf("购买成功！\n");
+        //     }
+        // }
     }
     return;
 }
@@ -645,7 +676,7 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     printf("欢迎光临礼品屋，请选择一件您喜欢礼品的\n");
     printf("1.奖金\n");
     printf("2.点数卡\n");
-    printf("3.财神\n");
+    // printf("3.财神\n");
     switch (func_get_gift(player_ptr[player_id]->role))
     {
     case -1:
@@ -659,28 +690,33 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
         sprintf(info_buf, "获得点数%d!", GIFT_POINT);
         player_ptr[player_id]->point += GIFT_POINT;
         break;
-    case 3:
-        sprintf(info_buf, "获得财神祝福%d回合!", GIFT_BLESS);
-        player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
-        break;
+    // case 3:
+    //     sprintf(info_buf, "获得财神祝福%d回合!", GIFT_BLESS);
+    //     player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
+    //     break;
     default:
+        sprintf(info_buf, "输入错误，放弃选择！");
         break;
     }
     return ;
 }
 
 
-void func_pass_magic(Game_t* game_ptr,int player_id)
-{
-    Land_t** land_ptr = game_ptr->land_ptr;
-    Player_t** player_ptr = game_ptr->players_ptr;
-    printf("你进入到魔法屋，请选择你所需要的魔法\n");
-    /*
-      待迭代开发；
-    */
-    return ;
-}
+// void func_pass_magic(Game_t* game_ptr,int player_id)
+// {
+//     Land_t** land_ptr = game_ptr->land_ptr;
+//     Player_t** player_ptr = game_ptr->players_ptr;
+//     printf("你进入到魔法屋，请选择你所需要的魔法\n");
+//     /*
+//       待迭代开发；
+//     */
+//     return ;
+// }
 
+void func_pass_park(Game_t* game_ptr,int player_id)
+{
+    sprintf(info_buf, "欢迎来到公园");
+}
 
 /**
  * @brief 
@@ -689,9 +725,39 @@ void func_pass_magic(Game_t* game_ptr,int player_id)
  * @param pos 
  * @return 1 表示是特殊位置，0表示不是特殊位置 
  */
-int func_check_special_pos(Game_t* game_ptr, int pos)
+// int func_check_special_pos(Game_t* game_ptr, int pos)
+// {
+//     if(pos != START_POS && pos != HOSPITAL_POS && pos != TOOL_POS && pos != GIFT_POS && pos != PRISON_POS && pos != MAGIC_POS)
+//     {
+//         return 0;
+//     }
+//     return 1;
+// }
+
+
+void func_generate_buff(Game_t* game_ptr)
 {
-    if(pos != START_POS && pos != HOSPITAL_POS && pos != TOOL_POS && pos != GIFT_POS && pos != PRISON_POS && pos != MAGIC_POS)
+    int pos = rand() % LAND_NUM;
+    while (!func_check_buff_valid_pos(game_ptr, pos))
+    {
+        pos = rand() % LAND_NUM;
+    }
+    func_put_buff(game_ptr, pos);
+}
+
+void func_put_buff(Game_t* game_ptr, int pos)
+{
+    game_ptr->land_ptr[pos]->item = BUFF;
+}
+
+/**
+ * @brief 
+ * 
+ * @return int 1表示可以放财神buff,0表示不行
+ */
+int func_check_buff_valid_pos(Game_t* game_ptr, int pos)
+{
+    if (func_check_some_one_here(game_ptr, pos) || game_ptr->land_ptr[pos]->item != VOID_ITEM || pos == GIFT_POS || pos == TOOL_POS)
     {
         return 0;
     }
@@ -742,26 +808,26 @@ void func_set_unmap(Game_t* game_ptr, int unmap_pos)
     return ;
 }
 
-void func_set_bomb(Game_t* game_ptr, int bomb_pos)
-{
-    Land_t** land_ptr = game_ptr->land_ptr;
-    land_ptr[bomb_pos]->item = BOMB;
-    return ;
-}
+// void func_set_bomb(Game_t* game_ptr, int bomb_pos)
+// {
+//     Land_t** land_ptr = game_ptr->land_ptr;
+//     land_ptr[bomb_pos]->item = BOMB;
+//     return ;
+// }
 
-void func_set_stop(Game_t* game_ptr, const char name_char, int stop_time)
-{
-    Player_t** player_ptr = game_ptr->players_ptr;
-    for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
-    {
-       if(role_symbol[player_ptr[player_id]->role] == name_char)
-        {
-            player_ptr[player_id]->recovery_time_cnt = stop_time;
-            return ;
-        }
-    }
-    return ;
-}
+// void func_set_stop(Game_t* game_ptr, const char name_char, int stop_time)
+// {
+//     Player_t** player_ptr = game_ptr->players_ptr;
+//     for(int player_id = 0 ; player_id < game_ptr->player_num; player_id++)
+//     {
+//        if(role_symbol[player_ptr[player_id]->role] == name_char)
+//         {
+//             player_ptr[player_id]->recovery_time_cnt = stop_time;
+//             return ;
+//         }
+//     }
+//     return ;
+// }
 
 void func_set_map(Game_t* game_ptr, const char name_char, int map_pos, int level)
 {
@@ -824,10 +890,10 @@ void func_set_item(Game_t* game_ptr, const char name_char, int item_type, int it
             {
                 player_ptr[player_id]->robot_cnt = item_num;
             }
-            else if(item_type == BOMB)
-            {
-                player_ptr[player_id]->bomb_cnt = item_num;
-            }
+            // else if(item_type == BOMB)
+            // {
+            //     player_ptr[player_id]->bomb_cnt = item_num;
+            // }
             return;
         }
     }

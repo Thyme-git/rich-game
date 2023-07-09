@@ -39,9 +39,9 @@ const char* get_num_regex = "^[ ]*(0|[1-9]+[0-9]*)[ ]*$";
 
 const char* get_yes_no_regex = "^[ ]*[ynYN][ ]*$";
 
-const char* get_item_regex = "^[ ]*[123Ff][ ]*$";
+const char* get_item_regex = "^[ ]*[12Ff][ ]*$";
 
-const char* get_gift_regex = "^[ ]*[123][ ]*$";
+const char* get_gift_regex = "^[ ]*[12][ ]*$";
 
 Reg_t* func_init_reg(const char* regex)
 {

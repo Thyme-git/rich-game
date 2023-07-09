@@ -63,8 +63,9 @@ void get_cmd(Game_t* game_ptr, int player_id)
         }
         else if(index == ORDER_BOMB)
         {
-            sscanf(str,"%s%d",p[0], &step[0]);
-            func_bomb(game_ptr, player_id, step[0]);
+            // sscanf(str,"%s%d",p[0], &step[0]);
+            // func_bomb(game_ptr, player_id, step[0]);
+            printf("你的输入错误  请重新输入指令 按help查看指令\n");
         }
         else if(index == ORDER_MAP)
         {
@@ -98,9 +99,11 @@ void get_cmd(Game_t* game_ptr, int player_id)
         }
         else if(index == ORDER_STOP)
         {
-            sscanf(str,"%s%s%s%d",p[0],p[1],p[2],&step[0]);
-            char c=p[2][0];
-            func_set_stop(game_ptr, c, step[0]);
+            // sscanf(str,"%s%s%s%d",p[0],p[1],p[2],&step[0]);
+            // char c=p[2][0];
+            // func_set_stop(game_ptr, c, step[0]);
+            printf("你的输入错误  请重新输入指令 按help查看指令\n");
+            continue;
         }
         else if(index == ORDER_UNMAP)
         {
@@ -114,8 +117,10 @@ void get_cmd(Game_t* game_ptr, int player_id)
         }
         else if(index == ORDER_BOMB)
         {
-            sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
-            func_set_bomb(game_ptr, step[0]);
+            // sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
+            // func_set_bomb(game_ptr, step[0]);
+            printf("你的输入错误  请重新输入指令 按help查看指令\n");
+            continue;
         }
         else if(index == ORDER_POINT)
         {
@@ -124,8 +129,10 @@ void get_cmd(Game_t* game_ptr, int player_id)
             func_set_point(game_ptr,c,step[0]);
         }else if (index == ORDER_SET_BOMB)
         {
-            sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
-            func_set_bomb(game_ptr, step[0]);
+            // sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
+            // func_set_bomb(game_ptr, step[0]);
+            printf("你的输入错误  请重新输入指令 按help查看指令\n");
+            continue;
         }else if (index == ORDER_DUMP)
         {
             func_dump(game_ptr , player_id, dump_fp);

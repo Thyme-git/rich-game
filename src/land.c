@@ -1,7 +1,7 @@
 # include <malloc.h>
 # include "utils.h"
 
-const char land_symbol[LAND_TYPE_NUM] = {'0', '1', '2', '3', 'S', 'T', 'G', 'M', 'H', 'P', '$'};
+const char land_symbol[LAND_TYPE_NUM] = {'0', '1', '2', '3', 'S', 'T', 'G', 'P', 'P', 'P', '$'};
 // 使用方法 land_symbol[VOID_LAND] 取得 '0'
 
 void func_init_land(Land_t* land_ptr[])
@@ -16,7 +16,7 @@ void func_init_land(Land_t* land_ptr[])
             price = LAND_1_PRICE;
         }else if (i > TOOL_POS && i < GIFT_POS){
             price = LAND_2_PRICE;
-        }else if (i > GIFT_POS && i < MAGIC_POS){
+        }else if (i > GIFT_POS && i < MAGIC_PARK_POS){
             price = LAND_3_PRICE;
         }
 
@@ -32,23 +32,23 @@ void func_init_land(Land_t* land_ptr[])
 
     // 初始化特殊类型
     land_ptr[START_POS]->type = START;
-    land_ptr[HOSPITAL_POS]->type = HOSPITAL;
+    land_ptr[HOSPITAL_PARK_POS]->type = HOSPITAL_PARK;
     land_ptr[TOOL_POS]->type = TOOL;
     land_ptr[GIFT_POS]->type = GIFT;
-    land_ptr[PRISON_POS]->type = PRISON;
-    land_ptr[MAGIC_POS]->type = MAGIC;
+    land_ptr[PRISON_PARK_POS]->type = PRISON_PARK;
+    land_ptr[MAGIC_PARK_POS]->type = MAGIC_PARK;
     
     // 初始化矿地   
-    for (int i = MAGIC_POS+1; i < LAND_NUM; ++i)
+    for (int i = MAGIC_PARK_POS+1; i < LAND_NUM; ++i)
     {
         land_ptr[i]->type = MINE;
     }
 
     // 矿地点数
-    land_ptr[MAGIC_POS+1]->point = 60;
-    land_ptr[MAGIC_POS+2]->point = 80;
-    land_ptr[MAGIC_POS+3]->point = 40;
-    land_ptr[MAGIC_POS+4]->point = 100;
-    land_ptr[MAGIC_POS+5]->point = 80;
-    land_ptr[MAGIC_POS+6]->point = 20;
+    land_ptr[MAGIC_PARK_POS+1]->point = 60;
+    land_ptr[MAGIC_PARK_POS+2]->point = 80;
+    land_ptr[MAGIC_PARK_POS+3]->point = 40;
+    land_ptr[MAGIC_PARK_POS+4]->point = 100;
+    land_ptr[MAGIC_PARK_POS+5]->point = 80;
+    land_ptr[MAGIC_PARK_POS+6]->point = 20;
 }
