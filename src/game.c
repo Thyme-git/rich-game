@@ -419,7 +419,7 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
         sprintf(buf, "%c破产辣", func_get_player_symbol(game_ptr, player_id));
         func_concat_info(buf);
     }else{
-        sprintf(buf, "%c被收取了%d租金", func_get_player_symbol(game_ptr, player_id), game_ptr->land_ptr[pos]->price / 2);
+        sprintf(buf, "%c被%c收取了%d租金", func_get_player_symbol(game_ptr, player_id), func_get_player_symbol(game_ptr, owner_id), game_ptr->land_ptr[pos]->price / 2);
         func_concat_info(buf);
     }
 }
@@ -598,11 +598,43 @@ void func_query(Game_t* game_ptr,int player_id)
     printf("路障:%d\n", player_ptr[player_id]->barrier_cnt);
     // printf("炸弹:%d\n", player_ptr[player_id]->bomb_cnt);
     printf("机器娃娃:%d\n", player_ptr[player_id]->robot_cnt);
-    printf("空地:%d\n", player_ptr[player_id]->solid_property_cnt[VOID_LAND]);
-    printf("茅屋:%d\n", player_ptr[player_id]->solid_property_cnt[HUT]);
-    printf("房子:%d\n", player_ptr[player_id]->solid_property_cnt[HOUSE]);
-    printf("摩天楼:%d\n", player_ptr[player_id]->solid_property_cnt[SKYCRAPER]);
+    printf("空地数量:%d", player_ptr[player_id]->solid_property_cnt[VOID_LAND]);
+    func_print_house_pos(game_ptr, player_id, VOID_LAND);
+    printf("茅屋数量:%d", player_ptr[player_id]->solid_property_cnt[HUT]);
+    func_print_house_pos(game_ptr, player_id, HUT);
+    printf("房子数量:%d", player_ptr[player_id]->solid_property_cnt[HOUSE]);
+    func_print_house_pos(game_ptr, player_id, HOUSE);
+    printf("摩天楼数量:%d", player_ptr[player_id]->solid_property_cnt[SKYCRAPER]);
+    func_print_house_pos(game_ptr, player_id, SKYCRAPER);
     // printf("\n");
+}
+
+/**
+ * @brief 获取房产的位置
+ * 
+ * @param pos 
+ */
+void func_print_house_pos(Game_t* game_ptr, int player_id, int type)
+{
+    int cnt = 0;
+    int pos[LAND_NUM];
+    for (int i = 0; i < LAND_NUM; ++i){
+        if (game_ptr->land_ptr[i]->owner_id == player_id && game_ptr->land_ptr[i]->type == type)
+        {
+            pos[cnt++] = i;
+        }
+    }
+    if (cnt == 0)
+    {
+        putchar('\n');
+        return;
+    }
+    printf("，分别位于");
+    for (int i = 0; i < cnt; ++i)
+    {
+        printf(" [%d]", pos[i]);
+    }
+    printf("处\n");
 }
 
 void func_quit(Game_t* game_ptr)

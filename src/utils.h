@@ -305,6 +305,8 @@ void func_set_point(Game_t* game_ptr, char name_char, int point);
 
 void func_dump(Game_t *game_ptr,int player_id, FILE *fin);
 
+void func_print_house_pos(Game_t* game_ptr, int player_id, int type);
+
 int func_check_is_player(char c);
 
 int func_check_someone_here(Game_t* game_ptr, int pos);
