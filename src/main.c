@@ -1,5 +1,6 @@
 # include <stddef.h>
 # include <stdlib.h>
+# include <time.h>
 # include "utils.h"
 
 extern FILE* dump_fp;
@@ -20,6 +21,8 @@ int main(int argc, char** argv)
             exit(-1);
         }
     }
+
+    srand((unsigned)time(NULL));
 
     // 初始化正则表达式
     func_init_all_reg();

@@ -14,7 +14,7 @@ Game_t* func_init_game()
     game_ptr->buff_pos = -1;
     game_ptr->next_buff_time = -1;
     game_ptr->round_num = 0;
-    // game_ptr->round_num = 10; // for test
+    game_ptr->round_num = 10; // for test
 
     // 输入玩家初始基金
     func_init_money(game_ptr);
