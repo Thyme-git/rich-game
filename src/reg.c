@@ -37,7 +37,7 @@ Reg_t* reg_ptr[REGEX_NUM] = {NULL};
 const char* get_role_regex = "^[ ]*[1-4]{2,5}[ ]*$";
 
 // 获取输入>=0的数字
-const char* get_num_regex = "^[ ]*(0|[1-9]?[0-9]{0,5})[ ]*$";
+const char* get_num_regex = "^[ ]*(0|[1-9][0-9]{0,5})[ ]*$";
 
 const char* get_yes_no_regex = "^[ ]*[ynYN][ ]*$";
 

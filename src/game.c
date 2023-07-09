@@ -629,7 +629,7 @@ void func_print_house_pos(Game_t* game_ptr, int player_id, int type)
         putchar('\n');
         return;
     }
-    printf("，分别位于");
+    printf("，位于");
     for (int i = 0; i < cnt; ++i)
     {
         printf(" [%d]", pos[i]);

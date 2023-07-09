@@ -74,8 +74,10 @@ int scanf_num()
     {
         if (func_check_blank_input(buf)) // 输入了空指令
         {
+            func_free_reg(reg_ptr);
             return -1;
         }
+        func_free_reg(reg_ptr);
         return 0;
     }
     
