@@ -83,9 +83,18 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     }
     for(int land_pos=0;land_pos<LAND_NUM;land_pos++)
     {
-        if(land_ptr[land_pos]->item!=VOID_ITEM)
+        if(land_ptr[land_pos]->item != VOID_ITEM && land_ptr[land_pos]->item != BUFF)
         {
             fprintf(fin,"\nitem %d %d",land_pos,land_ptr[land_pos]->item);
+            fflush(fin);
+        }
+    }
+
+    for(int land_pos=0;land_pos<LAND_NUM;land_pos++)
+    {
+        if(land_ptr[land_pos]->item == BUFF)
+        {
+            fprintf(fin,"\nmapgpd %d %d",land_pos,5-game_ptr->buff_keep_time);
             fflush(fin);
         }
     }

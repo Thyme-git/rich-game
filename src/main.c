@@ -29,10 +29,9 @@ int main(int argc, char** argv)
 
     // 无限循环游戏
     int done = 0;
-    int round_num = 0;
     while (!done)
     {
-        done = func_game_step(game_ptr, round_num++);
+        done = func_game_step(game_ptr);
     }
 
     // close

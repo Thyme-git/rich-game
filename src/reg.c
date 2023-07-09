@@ -26,6 +26,8 @@ const char* regex[REGEX_NUM] =
 ,   "^[ ]*set[ ]+barrier[ ]+[0-9]+ *$"
 ,   "^[ ]*bomb[ ]+(0|[-]?[1-9]+[0-9]*) *$" // block 09
 ,   "^[ ]*dump[ ]*$"
+,   "^[ ]*set[ ]+god[ ]+[0-9]+[ ]*$"
+,   "^[ ]*set[ ]+round[ ]*$"
 };
 
 // 使用方法regex[ORDER_ROLL] 获取 "^[ ]*roll *$"

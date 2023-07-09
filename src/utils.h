@@ -42,7 +42,7 @@
 //     )
 
 # define REGEX_MAX_LEN 64
-# define REGEX_NUM 20
+# define REGEX_NUM 22
 
 # define BUFF_OCCUR_TIME 10
 # define BUFF_OCCUR_INTERVAL 10
@@ -139,9 +139,11 @@ typedef struct _Game
 
     Land_t* land_ptr[LAND_NUM]; // 游戏的地图
 
-    int buff_on; // 1表示当前回合有财神buff
+    int buff_pos; // -1表示当前回合没有财神buff，>= 0表示财神buff的位置
     int next_buff_time; // 下一次出现财神buff的回合
     int buff_keep_time; // buff在地图上出现的回合数（没有被玩家捡到）
+
+    int round_num; // 表示当前是第几回合，从零开始计数
 } Game_t;
 
 
@@ -174,6 +176,8 @@ typedef enum _Order
 ,   ORDER_BARRIER
 ,   ORDER_BOMB
 ,   ORDER_DUMP
+,   ORDER_BUFF_POS
+,   ORDER_ROUND
 }Order_enum;
 
 typedef struct _Reg
@@ -187,6 +191,7 @@ typedef struct _Reg
 void get_cmd(Game_t* game_ptr, int player_id);
 
 void func_print_hint(Role_enum role);
+void func_concat_info(char* info);
 void func_display_map(Game_t* game_ptr, int player_id);
 void func_display_with_info(Game_t* game_ptr, int player_id, char* info);
 void func_print_with_color(Color_enum color, char chr);
@@ -205,11 +210,11 @@ void func_init_money(Game_t* game_ptr);
 /**
  * @brief 
  * 使用方法
- * int done = func_game_step(game_ptr, round_num)
+ * int done = func_game_step(game_ptr)
  * 运行一回合，即所有可以动的玩家进行一次投骰子
  * 当返回为1时，游戏结束
  */
-int func_game_step(Game_t* game_ptr, int round_num);
+int func_game_step(Game_t* game_ptr);
 
 void func_free_mem(Game_t* game_ptr);
 
@@ -263,7 +268,9 @@ int func_check_buff_valid_pos(Game_t* game_ptr, int pos);
 
 void func_put_buff(Game_t* game_ptr, int pos);
 
-void func_generate_buff(Game_t* game_ptr);
+int func_generate_buff(Game_t* game_ptr);
+
+void func_get_buff(Game_t* game_ptr, int player_id, int pos);
 
 // void func_pass_magic(Game_t* game_ptr,int player_id);
 
@@ -301,6 +308,8 @@ void func_dump(Game_t *game_ptr,int player_id, FILE *fin);
 int func_check_is_player(char c);
 
 int func_check_someone_here(Game_t* game_ptr, int pos);
+
+void func_round(Game_t* game_ptr, int round);
 
 // int func_player_id_to_symbol
 // end

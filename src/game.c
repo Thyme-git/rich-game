@@ -11,8 +11,10 @@ Game_t* func_init_game()
 {
     Game_t* game_ptr = (Game_t*)malloc(sizeof(Game_t));
     game_ptr->player_num = 0;
-    game_ptr->buff_on = 0;
+    game_ptr->buff_pos = -1;
     game_ptr->next_buff_time = -1;
+    // game_ptr->round_num = 0;
+    game_ptr->round_num = 10; // for test
 
     // 输入玩家初始基金
     func_init_money(game_ptr);
@@ -58,21 +60,21 @@ HERE:
     }
 }
 
-int func_game_step(Game_t* game_ptr, int round_num)
+int func_game_step(Game_t* game_ptr)
 {
     Player_t** player_ptr = game_ptr->players_ptr;
     Land_t** land_ptr = game_ptr->land_ptr;
 
-    if (game_ptr->buff_on == 0 && game_ptr->next_buff_time == -1 && round_num >= BUFF_OCCUR_TIME)
+    if (game_ptr->buff_pos == -1 && game_ptr->next_buff_time == -1 && game_ptr->round_num >= BUFF_OCCUR_TIME)
     {
-        game_ptr->next_buff_time = round_num + rand() % BUFF_OCCUR_INTERVAL;
+        game_ptr->next_buff_time = game_ptr->round_num + rand() % BUFF_OCCUR_INTERVAL;
     }
 
-    if (game_ptr->buff_on == 0 && game_ptr->next_buff_time == round_num)
+    if (game_ptr->buff_pos == -1 && game_ptr->next_buff_time == game_ptr->round_num)
     {
-        func_generate_buff(game_ptr);
-        game_ptr->buff_on = 1;
+        game_ptr->buff_pos = func_generate_buff(game_ptr);
         game_ptr->buff_keep_time = 0;
+        func_concat_info("财神祝福出现了");
     }
 
     for (int player_id = 0; player_id < game_ptr->player_num; ++player_id)
@@ -95,6 +97,8 @@ int func_game_step(Game_t* game_ptr, int round_num)
             continue;
         }
 
+        // 移动前的位置
+        int pre_pos = player_ptr[player_id]->pos;
 
         // 显示地图
         func_display_with_info(game_ptr, player_id, info_buf);
@@ -105,6 +109,13 @@ int func_game_step(Game_t* game_ptr, int round_num)
         // 获取摇骰子后的位置
         int pos = player_ptr[player_id]->pos;
         int land_type = land_ptr[pos]->type;
+
+        // 提示移动的步数
+        char buf[INPUT_BUFFER_SIZE];
+        sprintf(buf, "移动了%d步", (pos+LAND_NUM-pre_pos)%LAND_NUM);
+        func_concat_info(buf);
+        
+        func_display_with_info(game_ptr, player_id, info_buf);
 
         // 提示购买或升级
         func_check_buy_update(game_ptr, player_id);
@@ -144,35 +155,26 @@ int func_game_step(Game_t* game_ptr, int round_num)
         func_get_point(game_ptr, player_id);
         
 
-        // 捡到财神
-        if (game_ptr->land_ptr[pos]->item == BUFF)
-        {
-            game_ptr->players_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
-            game_ptr->buff_keep_time = 0;
-        }
-
         // 收租啦
         func_pay_toll(game_ptr, player_id);
 
+        if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
+        {
+            game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
+        }
     }
 
-    if (game_ptr->buff_on == 1)
-    {
-        // 減少財神次數
-        for (int player_id = 0; player_id < game_ptr->player_num; ++player_id){
-            if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
-            {
-                game_ptr->players_ptr[player_id]->free_of_toll_cnt -= 1;
-            }
-        }
-        
+    if (game_ptr->buff_pos >= 0)
+    {   
         game_ptr->buff_keep_time += 1;
         if (game_ptr->buff_keep_time >= BUFF_MAX_KEEP_TIME)
         {
-            game_ptr->buff_on = 0;
+            game_ptr->land_ptr[game_ptr->buff_pos]->item = VOID_ITEM;
+            game_ptr->buff_pos = -1;
             game_ptr->next_buff_time = -1;
         }
     }
+    game_ptr->round_num += 1;
     return 0;
 }
 
@@ -243,9 +245,9 @@ void func_check_buy(Game_t* game_ptr, int player_id, int pos)
             player_ptr[player_id]->solid_property_cnt[VOID_LAND] += 1;
             land_ptr[pos]->price += land_ptr[pos]->base_price;
             land_ptr[pos]->owner_id = player_ptr[player_id]->id;
-            sprintf(info_buf, "购买成功！");
+            func_concat_info("购买成功！");
         }else{
-            sprintf(info_buf, "资金不足无法购买！");
+            func_concat_info("资金不足无法购买！");
         }
     }
 }
@@ -267,9 +269,9 @@ void func_check_update(Game_t* game_ptr, int player_id, int pos)
             player_ptr[player_id]->solid_property_cnt[land_ptr[pos]->type] -= 1;
             player_ptr[player_id]->solid_property_cnt[land_ptr[pos]->type+1] += 1;
             land_ptr[pos]->type += 1;
-            sprintf(info_buf, "升级成功！");
+            func_concat_info("升级成功！");
         }else{
-            sprintf(info_buf, "资金不足无法升级！");
+            func_concat_info("资金不足无法升级！");
         }
     }
 }
@@ -314,7 +316,7 @@ void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos)
 
     func_change_pos(game_ptr, player_id, pos);
     land_ptr[pos]->item = VOID_ITEM;
-    sprintf(info_buf, "此路不通！");
+    func_concat_info("此路不通！");
 }
 
 /**
@@ -349,13 +351,12 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     
     for (int i = 0; i < steps; ++i)
     {
-        // // 遇到炸弹
-        // if (land_ptr[(i+start_pos) % LAND_NUM]->item == BOMB)
-        // {
-        //     func_suffer_bomb(game_ptr, player_id, (i+start_pos) % LAND_NUM);
-        //     return;
-        // }
-
+        // 财神祝福
+        if (game_ptr->land_ptr[(i+start_pos) % LAND_NUM]->item == BUFF)
+        {
+            func_get_buff(game_ptr, player_id, (i+start_pos) % LAND_NUM);
+        }
+        
         // 遇到路障
         if (land_ptr[(i+start_pos) % LAND_NUM]->item == BARRIER)
         {
@@ -365,6 +366,14 @@ void func_step(Game_t* game_ptr, int player_id, int steps)
     }
 
     func_change_pos(game_ptr, player_id, (player_ptr[player_id]->pos+steps) % LAND_NUM);
+}
+
+void func_get_buff(Game_t* game_ptr, int player_id, int pos)
+{
+    game_ptr->players_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
+    game_ptr->buff_keep_time = 0;
+    game_ptr->land_ptr[game_ptr->buff_pos]->item = VOID_ITEM;
+    func_concat_info("获得财神祝福");
 }
 
 void func_get_point(Game_t* game_ptr, int player_id)
@@ -387,7 +396,7 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     // 財神祝福
     if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
     {
-        sprintf(info_buf, "財神附身，可免過路費");
+        func_concat_info("財神附身，可免過路費");
         return;
     }
 
@@ -399,9 +408,11 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     {
         game_ptr->players_ptr[owner_id]->money -= game_ptr->land_ptr[pos]->price / 2;
         func_bankrupt(game_ptr, player_id);
-        sprintf(info_buf, "破产辣");
+        func_concat_info("破产辣");
     }else{
-        sprintf(info_buf, "收取了%d租金",game_ptr->land_ptr[pos]->price / 2);
+        char buf[INPUT_BUFFER_SIZE];
+        sprintf(buf, "收取了%d租金",game_ptr->land_ptr[pos]->price / 2);
+        func_concat_info(buf);
     }
 }
 
@@ -486,7 +497,7 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
     player_ptr[player_id]->barrier_cnt -= 1;
     land_ptr[target_pos]->item = BARRIER;
 
-    func_display_with_info(game_ptr, player_id, NULL);
+    func_display_with_info(game_ptr, player_id, "投放成功");
 }
 
 // void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
@@ -558,7 +569,7 @@ void func_robot(Game_t* game_ptr,int player_id)
 
     player_ptr[player_id]->robot_cnt -= 1;
 
-    func_display_with_info(game_ptr, player_id, "售卖成功！"); 
+    func_display_with_info(game_ptr, player_id, "投放成功"); 
     return ;
 }
 
@@ -623,7 +634,7 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
 
     if (player_ptr[player_id]->point < MIN_ITEM_PRICE)
     {
-        sprintf(info_buf, "点数少于最少点数的道具，退出道具屋！");
+        func_concat_info("点数少于最少点数的道具，退出道具屋！");
         return;
     }
 
@@ -677,17 +688,20 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     printf("1.奖金\n");
     printf("2.点数卡\n");
     // printf("3.财神\n");
+    char buf[INPUT_BUFFER_SIZE];
     switch (func_get_gift(player_ptr[player_id]->role))
     {
     case -1:
-        sprintf(info_buf, "输入错误，放弃选择！");
+        func_concat_info("输入错误，放弃选择！");
         break;
     case 1:
-        sprintf(info_buf, "获得奖金%d!", GIFT_MONEY);
+        sprintf(buf, "获得奖金%d!", GIFT_MONEY);
+        func_concat_info(buf);
         player_ptr[player_id]->money += GIFT_MONEY;
         break;
     case 2:
-        sprintf(info_buf, "获得点数%d!", GIFT_POINT);
+        sprintf(buf, "获得点数%d!", GIFT_POINT);
+        func_concat_info(buf);
         player_ptr[player_id]->point += GIFT_POINT;
         break;
     // case 3:
@@ -695,7 +709,7 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     //     player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
     //     break;
     default:
-        sprintf(info_buf, "输入错误，放弃选择！");
+        func_concat_info("输入错误，放弃选择！");
         break;
     }
     return ;
@@ -715,7 +729,7 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
 
 void func_pass_park(Game_t* game_ptr,int player_id)
 {
-    sprintf(info_buf, "欢迎来到公园");
+    func_concat_info("欢迎来到公园");
 }
 
 /**
@@ -735,7 +749,13 @@ void func_pass_park(Game_t* game_ptr,int player_id)
 // }
 
 
-void func_generate_buff(Game_t* game_ptr)
+/**
+ * @brief 
+ * 
+ * @param game_ptr 
+ * @return int 财神buff的出现的位置
+ */
+int func_generate_buff(Game_t* game_ptr)
 {
     int pos = rand() % LAND_NUM;
     while (!func_check_buff_valid_pos(game_ptr, pos))
@@ -743,6 +763,7 @@ void func_generate_buff(Game_t* game_ptr)
         pos = rand() % LAND_NUM;
     }
     func_put_buff(game_ptr, pos);
+    return pos;
 }
 
 void func_put_buff(Game_t* game_ptr, int pos)
@@ -785,10 +806,10 @@ void func_change_pos(Game_t* game_ptr, int player_id, int dst)
     func_pop(land_ptr[player_ptr[player_id]->pos]->privilige_role, role);
     func_push(land_ptr[dst % LAND_NUM]->privilige_role, role);
 
-    char buf[INPUT_BUFFER_SIZE];
-    sprintf(buf, "移动了%d步", (dst+LAND_NUM-player_ptr[player_id]->pos)%LAND_NUM);
+    // char buf[INPUT_BUFFER_SIZE];
+    // sprintf(buf, "移动了%d步", (dst+LAND_NUM-player_ptr[player_id]->pos)%LAND_NUM);
     player_ptr[player_id]->pos = dst % LAND_NUM;
-    func_display_with_info(game_ptr, player_id, buf);
+    // func_display_with_info(game_ptr, player_id, buf);
 }
 
 // for test
@@ -926,4 +947,9 @@ void func_set_point(Game_t* game_ptr, char name_char, int point)
         }
     }
      return ;
+}
+
+void func_round(Game_t* game_ptr, int round)
+{
+    game_ptr->round_num = round;   
 }

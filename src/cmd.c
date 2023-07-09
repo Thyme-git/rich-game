@@ -136,6 +136,17 @@ void get_cmd(Game_t* game_ptr, int player_id)
         }else if (index == ORDER_DUMP)
         {
             func_dump(game_ptr , player_id, dump_fp);
+        }else if(index ==ORDER_BUFF_POS)
+        {
+            sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
+            func_put_buff(game_ptr,step[0]);
+            game_ptr->buff_pos = -1;
+            game_ptr->buff_keep_time = 0;
+        }
+        else if(index == ORDER_ROUND)
+        {
+            sscanf(str,"%s%s",p[0],p[1]);
+            func_round(game_ptr,9);
         }
     }  
 }

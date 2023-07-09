@@ -1,5 +1,6 @@
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include "utils.h"
 
 extern const char land_symbol[LAND_TYPE_NUM];
@@ -20,6 +21,16 @@ const char* role_hint[ROLE_NUM] = {
 void func_print_hint(Role_enum role)
 {
     printf("%s ", role_hint[role]);
+}
+
+void func_concat_info(char* info)
+{
+    if (info_buf[0] == '\0'){
+        sprintf(info_buf, "%s", info);
+    }else{
+        strcat(info_buf, "|");        
+        strcat(info_buf, info);        
+    }
 }
 
 void func_print_with_color(Color_enum color, char chr)
@@ -115,7 +126,7 @@ void func_display_with_info(Game_t* game_ptr, int player_id, char* info)
     Player_t* player_ptr = game_ptr->players_ptr[player_id];
 
     // 显示角色状态栏
-    printf("[%c：位置%d|金钱%d|点数%d|路障%d|机器娃娃%d|财神祝福%d|空地%d|茅屋%d|房子%d|摩天楼%d]\n", role_symbol[player_ptr->role], player_ptr->pos, player_ptr->money, player_ptr->point, player_ptr->barrier_cnt, player_ptr->robot_cnt, player_ptr->free_of_toll_cnt, player_ptr->solid_property_cnt[VOID_LAND], player_ptr->solid_property_cnt[HUT], player_ptr->solid_property_cnt[HOUSE], player_ptr->solid_property_cnt[SKYCRAPER]);
+    printf("[%c：回合%d|位置%d|金钱%d|点数%d|路障%d|机器娃娃%d|财神祝福%d|空地%d|茅屋%d|房子%d|摩天楼%d]\n", role_symbol[player_ptr->role], game_ptr->round_num+1, player_ptr->pos, player_ptr->money, player_ptr->point, player_ptr->barrier_cnt, player_ptr->robot_cnt, player_ptr->free_of_toll_cnt, player_ptr->solid_property_cnt[VOID_LAND], player_ptr->solid_property_cnt[HUT], player_ptr->solid_property_cnt[HOUSE], player_ptr->solid_property_cnt[SKYCRAPER]);
 
     if (info != NULL){
         printf("[%s]\n", info);
