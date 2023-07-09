@@ -71,6 +71,10 @@ void func_update_map_info(Game_t* game_ptr, int player_id)
             land_ptr[i]->color = role_color[role];
         }
     }
+
+    // 当前玩家优先显示
+    land_ptr[player_ptr[player_id]->pos]->symbol = role_symbol[player_ptr[player_id]->role];
+    land_ptr[player_ptr[player_id]->pos]->color = role_color[player_ptr[player_id]->role];
 }
 
 
