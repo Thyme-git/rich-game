@@ -140,7 +140,7 @@ void get_cmd(Game_t* game_ptr, int player_id)
         {
             sscanf(str,"%s%s%d",p[0],p[1],&step[0]);
             func_put_buff(game_ptr,step[0]);
-            game_ptr->buff_pos = -1;
+            game_ptr->buff_pos = step[0];
             game_ptr->buff_keep_time = 0;
         }
         else if(index == ORDER_ROUND)

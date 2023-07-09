@@ -94,7 +94,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
     {
         if(land_ptr[land_pos]->item == BUFF)
         {
-            fprintf(fin,"\nmapgpd %d %d",land_pos,5-game_ptr->buff_keep_time);
+            fprintf(fin,"\nmapgod %d %d",land_pos,5-game_ptr->buff_keep_time);
             fflush(fin);
         }
     }

@@ -311,6 +311,8 @@ int func_check_someone_here(Game_t* game_ptr, int pos);
 
 void func_round(Game_t* game_ptr, int round);
 
+char func_get_player_symbol(Game_t* game_ptr, int player_id);
+
 // int func_player_id_to_symbol
 // end
 

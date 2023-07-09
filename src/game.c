@@ -112,7 +112,7 @@ int func_game_step(Game_t* game_ptr)
 
         // 提示移动的步数
         char buf[INPUT_BUFFER_SIZE];
-        sprintf(buf, "移动了%d步", (pos+LAND_NUM-pre_pos)%LAND_NUM);
+        sprintf(buf, "%c移动了%d步", func_get_player_symbol(game_ptr, player_id), (pos+LAND_NUM-pre_pos)%LAND_NUM);
         func_concat_info(buf);
         
         func_display_with_info(game_ptr, player_id, info_buf);
@@ -204,7 +204,7 @@ void func_game_over(Game_t* game_ptr)
             break;
         }
     }
-    printf("玩家%d获胜啦！\n", winner_id);
+    printf("玩家%c获胜啦！\n", func_get_player_symbol(game_ptr, winner_id));
 
     extern FILE* dump_fp;
 
@@ -316,7 +316,10 @@ void func_suffer_barrier(Game_t* game_ptr, int player_id, int pos)
 
     func_change_pos(game_ptr, player_id, pos);
     land_ptr[pos]->item = VOID_ITEM;
-    func_concat_info("此路不通！");
+
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "此路不通，%c被拦下来辽", func_get_player_symbol(game_ptr, player_id));
+    func_concat_info(buf);
 }
 
 /**
@@ -372,8 +375,10 @@ void func_get_buff(Game_t* game_ptr, int player_id, int pos)
 {
     game_ptr->players_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
     game_ptr->buff_keep_time = 0;
-    game_ptr->land_ptr[game_ptr->buff_pos]->item = VOID_ITEM;
-    func_concat_info("获得财神祝福");
+    game_ptr->land_ptr[game_ptr->buff_pos]->item = VOID_ITEM;\
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "%c获得财神祝福", func_get_player_symbol(game_ptr, player_id));
+    func_concat_info(buf);
 }
 
 void func_get_point(Game_t* game_ptr, int player_id)
@@ -386,6 +391,7 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
 {
     int pos = game_ptr->players_ptr[player_id]->pos;
     int owner_id = game_ptr->land_ptr[pos]->owner_id;
+    char buf[INPUT_BUFFER_SIZE];
 
     // 土地沒有主人 或者 主人是自己 或者 主人在監獄中
     if (owner_id == -1 || owner_id == player_id || game_ptr->players_ptr[owner_id]->recovery_time_cnt > 0)
@@ -396,22 +402,24 @@ void func_pay_toll(Game_t* game_ptr, int player_id)
     // 財神祝福
     if (game_ptr->players_ptr[player_id]->free_of_toll_cnt > 0)
     {
-        func_concat_info("財神附身，可免過路費");
+        sprintf(buf, "%c財神附身，可免過路費", func_get_player_symbol(game_ptr, player_id));
+        func_concat_info(buf);
         return;
     }
 
     game_ptr->players_ptr[player_id]->money -= game_ptr->land_ptr[pos]->price / 2;
     game_ptr->players_ptr[owner_id]->money += game_ptr->land_ptr[pos]->price / 2;
 
+    buf[INPUT_BUFFER_SIZE];
     // 破產
     if (game_ptr->players_ptr[player_id]->money < 0)
     {
         game_ptr->players_ptr[owner_id]->money -= game_ptr->land_ptr[pos]->price / 2;
         func_bankrupt(game_ptr, player_id);
-        func_concat_info("破产辣");
+        sprintf(buf, "%c破产辣", func_get_player_symbol(game_ptr, player_id));
+        func_concat_info(buf);
     }else{
-        char buf[INPUT_BUFFER_SIZE];
-        sprintf(buf, "收取了%d租金",game_ptr->land_ptr[pos]->price / 2);
+        sprintf(buf, "%c被收取了%d租金", func_get_player_symbol(game_ptr, player_id), game_ptr->land_ptr[pos]->price / 2);
         func_concat_info(buf);
     }
 }
@@ -454,7 +462,9 @@ void func_sell(Game_t* game_ptr, int player_id, int sell_pos)
     land_ptr[sell_pos]->type = VOID_LAND;
     land_ptr[sell_pos]->owner_id = -1;
 
-    func_display_with_info(game_ptr, player_id, "售卖成功！");
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "%c售卖成功！获得资金：%d", func_get_player_symbol(game_ptr, player_id), 2*land_ptr[sell_pos]->price);
+    func_display_with_info(game_ptr, player_id, buf);
 }
 
 void func_block(Game_t* game_ptr, int player_id, int block_pos)
@@ -497,7 +507,9 @@ void func_block(Game_t* game_ptr, int player_id, int block_pos)
     player_ptr[player_id]->barrier_cnt -= 1;
     land_ptr[target_pos]->item = BARRIER;
 
-    func_display_with_info(game_ptr, player_id, "投放成功");
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "%c投放路障成功", func_get_player_symbol(game_ptr, player_id));
+    func_display_with_info(game_ptr, player_id, buf);
 }
 
 // void func_bomb(Game_t* game_ptr, int player_id, int bomb_pos)
@@ -558,7 +570,7 @@ void func_robot(Game_t* game_ptr,int player_id)
     int pos = player_ptr[player_id]->pos;
     if ( player_ptr[player_id]->robot_cnt <= 0)
     {
-        printf("你没有机器人可以投放！\n");
+        printf("你没有机器人可以使用！\n");
         return;
     }
 
@@ -569,7 +581,9 @@ void func_robot(Game_t* game_ptr,int player_id)
 
     player_ptr[player_id]->robot_cnt -= 1;
 
-    func_display_with_info(game_ptr, player_id, "投放成功"); 
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "%c使用机器娃娃成功", func_get_player_symbol(game_ptr, player_id));
+    func_display_with_info(game_ptr, player_id, buf); 
     return ;
 }
 
@@ -632,9 +646,12 @@ void func_pass_tool(Game_t* game_ptr,int player_id)
     printf("按'F'退出道具屋\n");
     // func_print_hint(player_ptr[player_id]->role);
 
+    char buf[INPUT_BUFFER_SIZE];
+
     if (player_ptr[player_id]->point < MIN_ITEM_PRICE)
     {
-        func_concat_info("点数少于最少点数的道具，退出道具屋！");
+        sprintf(buf, "%c点数少于最少点数的道具，退出道具屋！", func_get_player_symbol(game_ptr, player_id));
+        func_concat_info(buf);
         return;
     }
 
@@ -692,15 +709,16 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     switch (func_get_gift(player_ptr[player_id]->role))
     {
     case -1:
-        func_concat_info("输入错误，放弃选择！");
+        sprintf(buf, "%c输入错误，放弃选择！", func_get_player_symbol(game_ptr, player_id));
+        func_concat_info(buf);
         break;
     case 1:
-        sprintf(buf, "获得奖金%d!", GIFT_MONEY);
+        sprintf(buf, "%c获得奖金%d!", func_get_player_symbol(game_ptr, player_id), GIFT_MONEY);
         func_concat_info(buf);
         player_ptr[player_id]->money += GIFT_MONEY;
         break;
     case 2:
-        sprintf(buf, "获得点数%d!", GIFT_POINT);
+        sprintf(buf, "%c获得点数%d!", func_get_player_symbol(game_ptr, player_id), GIFT_POINT);
         func_concat_info(buf);
         player_ptr[player_id]->point += GIFT_POINT;
         break;
@@ -709,7 +727,8 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
     //     player_ptr[player_id]->free_of_toll_cnt = GIFT_BLESS;
     //     break;
     default:
-        func_concat_info("输入错误，放弃选择！");
+        sprintf(buf, "%c输入错误，放弃选择！", func_get_player_symbol(game_ptr, player_id));
+        func_concat_info(buf);
         break;
     }
     return ;
@@ -729,7 +748,9 @@ void func_pass_gift(Game_t* game_ptr,int player_id)
 
 void func_pass_park(Game_t* game_ptr,int player_id)
 {
-    func_concat_info("欢迎来到公园");
+    char buf[INPUT_BUFFER_SIZE];
+    sprintf(buf, "欢迎%c来到公园", func_get_player_symbol(game_ptr, player_id));
+    func_concat_info(buf);
 }
 
 /**
@@ -952,4 +973,9 @@ void func_set_point(Game_t* game_ptr, char name_char, int point)
 void func_round(Game_t* game_ptr, int round)
 {
     game_ptr->round_num = round;   
+}
+
+char func_get_player_symbol(Game_t* game_ptr, int player_id)
+{
+    return role_symbol[game_ptr->players_ptr[player_id]->role];
 }
