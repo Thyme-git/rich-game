@@ -57,7 +57,7 @@ class TestProgram:
 
 
         # 比较输出文件和预期输出文件
-        if filecmp.cmp(f'{test_case_folder}/output', f'{test_case_folder}/dump'):
+        if filecmp.cmp(f'{test_case_folder}/output', f'{test_case_folder}/dump', shallow=False):
             print('\033[32m' + f':) Test "{test_case_folder}" passed!' + '\033[0m')
             self.passed_tests += 1
         else:
