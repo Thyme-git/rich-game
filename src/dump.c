@@ -34,7 +34,7 @@ void func_dump(Game_t *game_ptr, int player_id, FILE *fin)
                 fprintf(fin,"point %d\n",player_ptr[i]->point);
                 fprintf(fin,"item1 %d\n",player_ptr[i]->barrier_cnt);
                 fprintf(fin,"item2 %d\n",player_ptr[i]->robot_cnt);
-                // fprintf(fin,"item3 %d\n",player_ptr[i]->bomb_cnt); // 可能保持零
+                fprintf(fin,"item3 %d\n",0); // 可能保持零
                 fprintf(fin,"buff %d\n",player_ptr[i]->free_of_toll_cnt);
                 fprintf(fin,"stop %d\n", player_ptr[i]->recovery_time_cnt);
                 fprintf(fin,"userloc %d\n",player_ptr[i]->pos);
