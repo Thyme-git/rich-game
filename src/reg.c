@@ -11,9 +11,9 @@ const char* regex[REGEX_NUM] =
 ,   "^[ ]*query *$"
 ,   "^[ ]*help *$"
 ,   "^[ ]*quit *$"
-,   "^[ ]*step[ ]+(0|[1-9]+[0-9]*) *$" 
-,   "^[ ]*sell[ ]+(0|[1-9]+[0-9]*) *$" // sell 009不正确
-,   "^[ ]*block[ ]+(0|[-]?[1-9]+[0-9]*) *$" // block -0
+,   "^[ ]*step[ ]+(0|[1-9][0-9]?) *$" 
+,   "^[ ]*sell[ ]+(0|[1-9][0-9]?) *$" // sell 009不正确
+,   "^[ ]*block[ ]+(0|[-]?[1-9][0-9]?) *$" // block -0
 ,   "^[ ]*set[ ]+money[ ]+(A|Q|J|S)[ ]*[0-9]+ *$"
 ,   "^[ ]*set[ ]+buff[ ]+(A|Q|J|S)[ ]*[0-9]+ *$"
 ,   "^[ ]*set[ ]+point[ ]+(A|Q|J|S)[ ]*[0-9]+ *$"
@@ -37,7 +37,7 @@ Reg_t* reg_ptr[REGEX_NUM] = {NULL};
 const char* get_role_regex = "^[ ]*[1-4]{2,5}[ ]*$";
 
 // 获取输入>=0的数字
-const char* get_num_regex = "^[ ]*(0|[1-9]+[0-9]*)[ ]*$";
+const char* get_num_regex = "^[ ]*(0|[1-9]?[0-9]{0,5})[ ]*$";
 
 const char* get_yes_no_regex = "^[ ]*[ynYN][ ]*$";
 
