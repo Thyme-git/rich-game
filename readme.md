@@ -4,6 +4,8 @@
 > 放一张图片
 
 ## 使用方法
+* 使用自动化测试: python test.py <game> <test_folder>
+* 使用自动化测试所有组用例: python multy_test.py <game> test_all
 
 ### 支持平台
 * windows
