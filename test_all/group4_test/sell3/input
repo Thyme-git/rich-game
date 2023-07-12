@@ -1,0 +1,12 @@
+1500
+12
+set map 40 Q 3
+set map 41 A 3
+sell 40
+step 1
+n
+sell 1
+step 1
+n
+dump
+quit

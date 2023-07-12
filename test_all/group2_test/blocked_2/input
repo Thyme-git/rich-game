@@ -1,0 +1,17 @@
+1000
+1234
+set pos Q 1
+set pos A 2
+set pos S 3
+set pos J 4
+set barrier 10
+step 20
+n
+step 1
+n
+step 2
+n
+step 3
+n
+dump
+quit

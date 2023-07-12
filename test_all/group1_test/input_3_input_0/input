@@ -1,0 +1,13 @@
+14514
+34
+set pos S 41
+set pos J 13
+step 3
+n
+step 3
+n
+set point S 114
+set money J 20000
+set buff J 54
+dump
+quit

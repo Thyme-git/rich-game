@@ -1,0 +1,8 @@
+40000
+12
+set pos Q 35
+3
+step 1
+n
+dump
+quit

@@ -1,0 +1,9 @@
+1000
+1234
+set money Q 500
+set pos Q 29
+step 2                  
+y                                            
+dump
+quit
+//buy land successd

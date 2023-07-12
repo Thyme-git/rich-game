@@ -1,0 +1,7 @@
+1500
+12
+set item Q 1 2
+block 9
+block -9
+dump
+quit

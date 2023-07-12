@@ -1,0 +1,19 @@
+10000
+123
+set buff Q 2
+set buff A 3
+set buff S 3
+step 1
+n
+step 1
+n
+step 1
+n
+step 1
+n
+step 1
+n
+step 1
+n
+dump
+quit

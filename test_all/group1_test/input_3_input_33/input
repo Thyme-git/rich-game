@@ -1,0 +1,11 @@
+2000
+12
+set point Q 200
+set pos Q 27
+step 1
+1
+1
+1
+1
+dump
+quit

@@ -1,0 +1,12 @@
+20000
+241
+set pos A 4
+set pos Q 8
+set pos J 3
+step 2
+n
+set point Q 222
+set money A 20000
+set map 31 J 1
+dump
+quit

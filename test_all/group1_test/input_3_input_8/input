@@ -1,0 +1,18 @@
+40000
+12
+set pos Q 10
+set pos A 63
+step 1
+n
+step 1
+step 1
+n
+step 1
+step 1
+n
+step 1
+set point Q 114
+set money A 20000
+set map 9 Q 2
+dump
+quit

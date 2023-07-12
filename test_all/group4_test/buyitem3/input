@@ -1,0 +1,10 @@
+1500
+12
+set item Q 2 10
+set point Q 50
+step 28
+1
+2
+f
+dump
+quit

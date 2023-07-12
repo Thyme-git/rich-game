@@ -1,0 +1,7 @@
+1500
+12
+set map 1 A 0
+set god 1
+step 1
+dump
+quit

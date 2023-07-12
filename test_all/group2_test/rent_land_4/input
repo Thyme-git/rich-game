@@ -1,0 +1,8 @@
+5000
+1234
+set buff Q 5
+set map 4 A 1
+step 4
+dump
+quit
+//rent fail

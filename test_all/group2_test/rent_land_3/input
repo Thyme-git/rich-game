@@ -1,0 +1,7 @@
+1000
+1234
+set map 34 J 2
+step 34
+dump
+quit
+//rent success

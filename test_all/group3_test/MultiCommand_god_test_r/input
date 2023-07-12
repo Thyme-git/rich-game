@@ -1,0 +1,7 @@
+1000
+123
+set god 5
+step 5
+n
+dump
+quit

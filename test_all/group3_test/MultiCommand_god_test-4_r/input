@@ -1,0 +1,14 @@
+1000
+12
+set god 5
+set map 6 Q 3
+step 1
+n
+step 5
+n
+step 1
+n
+step 1
+n
+dump 
+quit

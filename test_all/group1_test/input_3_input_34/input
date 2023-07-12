@@ -1,0 +1,25 @@
+2000
+12
+set buff A 10
+set map 1 Q 3
+set map 2 Q 3
+set map 3 Q 3
+set map 4 Q 3
+set map 5 Q 3
+step 1
+Y
+step 1
+step 1
+Y
+step 1
+step 1
+Y
+step 1
+step 1
+Y
+step 1
+step 1
+Y
+step 1
+dump
+quit

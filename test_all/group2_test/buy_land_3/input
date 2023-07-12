@@ -1,0 +1,8 @@
+1000
+1234
+set pos Q 50                   
+step 3
+Y      
+dump
+quit
+//buy land success

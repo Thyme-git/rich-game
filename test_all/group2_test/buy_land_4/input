@@ -1,0 +1,9 @@
+1000
+1234
+set money Q 200  
+set pos Q 30                 
+step 1
+Y      
+dump
+quit
+//buy land fail

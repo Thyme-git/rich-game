@@ -1,0 +1,8 @@
+1000
+1234
+set money Q 200                     
+step 53
+Y      
+dump
+quit
+//buy land fail

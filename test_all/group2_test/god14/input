@@ -1,0 +1,10 @@
+10000
+12
+set item Q 1 1
+set god 4
+block 4
+step 1
+N
+dump
+quit
+// 测试道具是否能放在财神上

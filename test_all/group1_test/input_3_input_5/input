@@ -1,0 +1,14 @@
+40000
+12
+set pos Q 0
+step 5
+n
+set item A 1 5
+set item A 2 3
+set item A 3 2
+set point Q 114
+set money A 20000
+set buff A 20
+set barrier 0
+dump
+quit

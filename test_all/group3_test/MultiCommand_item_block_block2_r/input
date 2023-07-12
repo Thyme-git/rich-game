@@ -1,0 +1,24 @@
+20000
+123
+set item Q 1 7
+step 5
+n
+step 3
+n
+step 4
+n
+block -1
+block -2
+block 2
+block 3
+block 4
+block 14
+block 3
+step 1
+n
+step 5
+n
+step 7
+n
+dump
+quit

@@ -1,0 +1,13 @@
+40000
+12
+set pos Q 48
+step 1
+set item A 1 5
+set item A 2 3
+set item A 3 2
+set point Q 114
+set money A 20000
+set map 9 Q 2
+set buff A 20
+dump
+quit

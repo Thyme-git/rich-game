@@ -1,0 +1,18 @@
+10000
+1234
+set map 2 Q 1
+set map 30 Q 1
+set map 51 Q 1
+sell 2
+sell 30
+sell 51
+step 0
+step 2
+n
+step 30
+n
+step 51
+n
+dump
+quit
+//success to sell level 1

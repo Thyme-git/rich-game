@@ -1,0 +1,9 @@
+10000
+123
+set point Q 100
+set money Q 50000
+step 35
+2
+N
+dump
+quit

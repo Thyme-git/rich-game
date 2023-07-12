@@ -1,0 +1,15 @@
+45674
+13
+set item Q 2 3
+set item S 2 3
+set bomb 65
+set barrier 67
+set barrier 68
+step 57
+n
+step 3
+n
+robot
+step 19
+dump
+quit

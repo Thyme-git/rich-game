@@ -1,0 +1,11 @@
+10000
+12
+set god 14
+step 2
+n
+step 1
+n
+step 5
+n
+dump
+quit

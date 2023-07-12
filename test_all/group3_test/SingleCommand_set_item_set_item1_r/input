@@ -1,0 +1,5 @@
+10000
+123
+set item A 1 10
+dump
+quit

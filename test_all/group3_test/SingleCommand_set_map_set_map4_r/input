@@ -1,0 +1,7 @@
+10000
+123
+set map 5 S 0
+set map 50 S 0
+set map 48 Q 0
+dump
+quit

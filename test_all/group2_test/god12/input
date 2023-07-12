@@ -1,0 +1,10 @@
+10000
+12
+set god 5
+set item Q 2 1
+robot
+step 1
+N
+dump
+quit
+// 测试机器娃娃是否能清除财神

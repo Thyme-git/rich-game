@@ -1,0 +1,7 @@
+1500
+12
+set item Q 2 1
+set god 11
+robot
+dump
+quit

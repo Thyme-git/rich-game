@@ -1,0 +1,11 @@
+1500
+12
+set point Q 29
+set point A 49
+step 28
+step 28
+1
+2
+f
+dump
+quit

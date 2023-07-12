@@ -1,0 +1,9 @@
+10000
+12
+set pos Q 0
+set pos A 0
+step 69
+n
+step 0
+dump
+quit

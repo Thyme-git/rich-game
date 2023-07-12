@@ -1,0 +1,9 @@
+2000
+12
+set pos Q 37
+step 2
+Y
+step 1
+Y
+dump
+quit

@@ -1,0 +1,9 @@
+2000
+12
+set map 10 Q 0
+set pos A 9
+step 1
+n
+step 1
+dump
+quit

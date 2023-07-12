@@ -1,0 +1,8 @@
+1500
+12
+set item Q 2 1
+set barrier -10
+set barrier 10
+robot
+dump
+quit

@@ -1,0 +1,5 @@
+10000
+123
+set point S 10000
+dump
+quit

@@ -1,0 +1,12 @@
+2000
+12
+set item Q 1 5
+set item Q 2 5
+block 3
+robot
+step 6
+n
+step 5
+n
+dump
+quit

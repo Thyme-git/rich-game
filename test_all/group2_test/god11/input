@@ -1,0 +1,8 @@
+10000
+12
+set map 2 A 1
+set god 1
+step 2
+dump
+quit
+// 测试拥有财神后是否会交钱

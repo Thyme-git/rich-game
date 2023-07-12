@@ -1,0 +1,7 @@
+
+23
+set map 2 A 3
+set map 1 S 2
+set unmap 2
+dump
+quit

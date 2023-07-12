@@ -1,0 +1,7 @@
+10000
+12
+set map 1 A 1
+set god 1
+dump
+quit
+// 测试财神是否会出现在房产上

@@ -1,0 +1,8 @@
+10000
+123
+set god 4
+set map 5 A 2
+step 5
+n
+dump
+quit

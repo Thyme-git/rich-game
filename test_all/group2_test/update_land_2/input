@@ -1,0 +1,9 @@
+10000
+1234
+set pos Q 30
+set map 32 Q 1
+step 2 
+Y
+dump
+quit
+//update success

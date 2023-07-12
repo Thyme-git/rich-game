@@ -1,0 +1,8 @@
+1000
+1234
+set pos Q 1
+step 1                  
+Y                       
+dump
+quit
+//buy land success

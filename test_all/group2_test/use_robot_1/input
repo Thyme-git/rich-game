@@ -1,0 +1,18 @@
+1000
+1234
+set item Q 1 2
+set item Q 2 1
+set item A 2 1
+set item S 2 1
+set item J 2 1
+block 2
+block 8
+robot
+step 4
+n
+robot
+step 10
+n
+dump
+quit
+//use success

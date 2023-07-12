@@ -1,0 +1,10 @@
+10000
+1234
+set money Q 100
+set pos Q 8
+set map 9 Q 0
+step 1
+N
+dump
+quit
+//upgrade fail

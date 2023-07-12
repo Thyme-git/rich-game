@@ -1,0 +1,10 @@
+1500
+12
+set map 1 Q 0
+set map 2 A 1
+step 1
+y
+step 2
+y
+dump
+quit

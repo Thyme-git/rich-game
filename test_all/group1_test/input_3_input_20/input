@@ -1,0 +1,11 @@
+2000
+12
+set barrier 15
+set barrier 16
+set barrier 17
+step 6
+n
+step 1
+n
+dump
+quit

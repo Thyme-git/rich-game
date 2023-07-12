@@ -1,0 +1,7 @@
+1500
+12
+set map 50 Q 1
+step 50
+y
+dump
+quit

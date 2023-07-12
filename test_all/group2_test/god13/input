@@ -1,0 +1,8 @@
+10000
+12
+set map 2 A 1
+set god 2
+step 2
+dump
+quit
+// 测试走到有别人房产的财神上是否会交钱

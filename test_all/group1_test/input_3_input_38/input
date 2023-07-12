@@ -1,0 +1,10 @@
+2000
+12
+set god 5
+set pos 10 A 2
+step 10
+n
+step 1
+n
+dump
+quit

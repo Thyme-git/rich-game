@@ -1,0 +1,8 @@
+1000
+1234
+set money Q 1000   
+set map 31 J 1
+step 31
+dump
+quit
+//rent success
