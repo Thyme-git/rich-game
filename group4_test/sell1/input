@@ -1,0 +1,12 @@
+1500
+12
+set map 1 Q 0
+set map 2 A 1
+sell 1
+step 6
+n
+sell 2
+step 6
+n
+dump
+quit

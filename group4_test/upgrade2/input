@@ -1,0 +1,9 @@
+1500
+12
+set map 30 Q 2
+set map 31 A 3
+step 30
+y
+step 31
+dump
+quit

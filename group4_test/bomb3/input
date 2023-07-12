@@ -1,0 +1,8 @@
+1500
+12
+set item Q 3 4
+Bomb 35
+step 36
+n
+dump
+quit

@@ -1,0 +1,11 @@
+1500
+123
+set bomb 65
+step 64
+step 64
+step 64
+step 3
+step 3
+step 3
+dump
+quit

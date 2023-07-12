@@ -1,0 +1,44 @@
+user QA
+preuser Q
+Q
+alive 1
+money 4500
+point 0
+item1 0
+item2 0
+item3 0
+buff 0
+stop 0
+userloc 1
+A
+alive 1
+money 5500
+point 0
+item1 0
+item2 0
+item3 0
+buff 0
+stop 0
+userloc 1
+S
+alive 0
+money 0
+point 0
+item1 0
+item2 0
+item3 0
+buff 0
+stop 0
+userloc 0
+J
+alive 0
+money 0
+point 0
+item1 0
+item2 0
+item3 0
+buff 0
+stop 0
+userloc 0
+MAP
+mapuser 1 QA

@@ -1,0 +1,14 @@
+1500
+12
+set buff Q 5
+set stop A 9
+set map 2 A 1
+set map 3 A 2
+set map 4 A 3
+set map 5 A 2
+step 2
+step 1
+step 1
+step 1
+dump
+quit
